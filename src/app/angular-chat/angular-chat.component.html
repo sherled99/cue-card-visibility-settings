@@ -1,0 +1,33 @@
+<div class="container" *ngIf="isShowChatList; else isShowChat">
+    <app-angular-chat-list-chats [chatList]="chatList"
+                                    (isShowChat)="openChat($event)"
+    ></app-angular-chat-list-chats>
+    </div>
+
+    <ng-template #isShowChat>
+    <mat-grid-list cols="1" rowHeight="fit">
+        <mat-grid-tile [rowspan]="1">
+            <app-angular-chat-header [chat]="chat"
+                                        (cardClick)="onOpenCard($event)"
+                                        (backToListChat)="showChatList()"
+            ></app-angular-chat-header>
+        </mat-grid-tile>
+        <mat-grid-tile [rowspan]="18">
+            <app-angular-chat-messages [chat]="chat"
+                                        [locale]="locale"
+            ></app-angular-chat-messages>
+        </mat-grid-tile>
+        <mat-grid-tile [rowspan]="2">    
+            <app-angular-chat-footer [chat]="chat"
+                                        [locale]="locale"
+                                        [sandbox]="sandbox"
+                                        [terrasoft]="terrasoft"
+                                        [serviceHelper]="serviceHelper"
+                                        (refresMessages)="onRefreshMessages($event)"
+            ></app-angular-chat-footer>
+        </mat-grid-tile>                        
+    </mat-grid-list>
+</ng-template>
+
+
+

@@ -1,0 +1,19 @@
+<div class="container" >
+    <!-- <div class="search-div">
+        <button class="menu-button" (click)="menuButtonClick.emit()">
+            <mat-icon class="menu-icon">menu</mat-icon>
+        </button>
+        <input class="menu-input" (keyup)="filterMessages($event)" placeholder="Search"> 
+    </div> -->
+    <div class="conversation-list" *ngFor="let chat of chatList">
+        <div class="conversation" [id]="chat.id" (click)="showChat({channelId: chat.channel.id, contactId: chat.contact.id})">
+            <div class="conversation-text">
+                <div class="conversation-title">{{ chat.contact.name }}</div>
+                <div class="conversation-title">{{ chat.channel.name }}</div>
+            </div>
+            <div class="conversation-image-div">
+                <mat-icon matBadge="{{chat.unreadCount > 0 ? chat.unreadCount : ''}}" matBadgeColor="warn">chat_bubble</mat-icon>
+            </div>
+        </div>
+    </div>
+</div>

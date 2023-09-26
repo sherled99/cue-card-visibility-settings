@@ -1,0 +1,26 @@
+<button class="welcome-message-btn" *ngIf="!isHasIncometMessage" (click)="showTemplateLookup(constants.Template.Type.whatsAppTemplate)">{{translateRecord.getTranslateWord(locale, 'template')}}</button>
+
+<div *ngIf="isHasIncometMessage">
+    <mat-grid-list cols="20" rowHeight="fit">
+        <mat-grid-tile [colspan]="2"> 
+            <button class="bar-button" (click)="showTemplateLookup(constants.Template.Type.textTemplate)">
+                <mat-icon class="bar-icon">message</mat-icon>
+            </button>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="17"> 
+            <textarea
+                lines="5"
+                #input
+                class="message-input"
+                id="main-input-message"
+                placeholder="{{translateRecord.getTranslateWord(locale, 'placeholder')}}"
+                (keydown.enter)="saveNewOutcomeMessage(input.value, $event)"
+            ></textarea>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1"> 
+            <button class="bar-button" (click)="saveNewOutcomeMessage(input.value, $event)" [disabled]="!isHasIncometMessage">
+                <mat-icon class="bar-icon">send</mat-icon>
+            </button>
+        </mat-grid-tile>    
+    </mat-grid-list>
+</div> 

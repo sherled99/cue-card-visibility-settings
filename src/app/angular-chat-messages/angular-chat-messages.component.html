@@ -1,0 +1,20 @@
+<div class="background-image" id="bacground-screen-chat" #chatListContainer>
+    <div class="messages-list" >
+        <p id="no-message" class="text" *ngIf="isHasNoMessage">{{translateRecord.getTranslateWord(locale, 'noMessage')}}</p>
+        <div *ngFor="let message of addDateToMessage(chat.messages)">
+            <div [class]="arrayClassNameByMessage[message.send_type]">    
+                <div [class]="message.type == 'media' ? 'media-message' : 'message-text'" [innerHtml]="message.type == 'media' ? translateRecord.getTranslateWord(locale, 'mediaMessage') : checkHrefInMessage(message.text)"></div>
+                <div [class]=" message.send_type == 'delimiter'
+                        ? 'message-time-delimiter'
+                        : 'message-time-receiver'">
+                    {{this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)}}
+                </div>
+                <div [class]=" message.send_type == 'delimiter'
+                        ? 'message-time-delimiter'
+                        : 'message-time-receiver'">
+                    {{message.status}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
