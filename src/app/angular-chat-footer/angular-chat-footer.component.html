@@ -1,6 +1,6 @@
-<button class="welcome-message-btn" *ngIf="!isHasIncometMessage" (click)="showTemplateLookup(constants.Template.Type.whatsAppTemplate)">{{translateRecord.getTranslateWord(locale, 'template')}}</button>
+<button class="welcome-message-btn" *ngIf="!isHideWelconeMessageBtn" (click)="showTemplateLookup(constants.Template.Type.whatsAppTemplate)">{{translateRecord.getTranslateWord(locale, 'template')}}</button>
 
-<div *ngIf="isHasIncometMessage">
+<div *ngIf="isHideWelconeMessageBtn">
     <mat-grid-list cols="20" rowHeight="fit">
         <mat-grid-tile [colspan]="2"> 
             <button class="bar-button" (click)="showTemplateLookup(constants.Template.Type.textTemplate)">
@@ -18,7 +18,7 @@
             ></textarea>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="1"> 
-            <button class="bar-button" (click)="saveNewOutcomeMessage(input.value, $event)" [disabled]="!isHasIncometMessage">
+            <button class="bar-button" (click)="saveNewOutcomeMessage(input.value, $event)">
                 <mat-icon class="bar-icon">send</mat-icon>
             </button>
         </mat-grid-tile>    

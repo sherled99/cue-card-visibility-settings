@@ -16,4 +16,12 @@ export namespace Constants
             public static answered = '50a6901f-ec9f-419e-bfb0-b161ee416674';
         }
     }
+
+    export namespace Messanger
+    {
+        export class Code
+        {
+            public static telegram = 'telegram';
+        }
+    }
 }

@@ -19,10 +19,30 @@ export class AngularChatFooterComponent {
 
   constructor(public translateRecord: TranslateByLocale){}
   
-  public get isHasIncometMessage(){
-    return this.chat.messages?.find((x: any) => x.send_type === 'inbound' && (new Date(x.unixDate) > new Date(new Date().setDate(new Date().getDate()-1))))  !== undefined;
+  public isHasTodayIncometMessage(){
+    let currentUserTime = this.getCurrentUserTimeStamp();
+    return this.chat.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
+  }
+
+  public isTelegramMessanger(){
+    return false;//this.constants.Messanger.Code.telegram === this.chat.channel.code;
+  }
+
+  public get isHideWelconeMessageBtn(){
+    return this.isTelegramMessanger() || this.isHasTodayIncometMessage();
+  }
+
+  public getCurrentUTCTimeStamp(){
+    let now = new Date();
+    return Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , 
+    now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
   }
   
+  public getCurrentUserTimeStamp(){
+    let utcNow = this.getCurrentUTCTimeStamp();
+    return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET*60000;
+  }
+
   public saveNewOutcomeMessage(message: string, event: any) {
     if(event !== null && event.key == 'Enter'){
       event.preventDefault();
@@ -52,17 +72,20 @@ export class AngularChatFooterComponent {
     if(event && event.isTemplate){
       args['TemplateId'] = event.id
     }
-    console.log('new message args ', args);
+    console.log('new message args !! ', args);
     const methodName = event && event.isTemplate ? 'CreateTemplate' : 'CreateMessage';
     this.serviceHelper.callService({
         serviceName: "GoChatService",
         methodName: methodName,
         callback: function(messageId: any) {
+          console.log('messageId ', messageId);
           newMsg.id = messageId;
         },
         scope: this,
         data: args
     }, this);
+
+    this.chat.messages = Object.assign([], this.chat.messages);
 
     let listIncomeMessage = this.chat.messages?.filter((x: any)=>(x.status === 'seen' || 'new') && x.send_type ==='inbound')
                                                 .map((x: { id: any; })=>x.id);
@@ -81,7 +104,6 @@ export class AngularChatFooterComponent {
               newStatusId: this.constants.Message.Status.answered
             }
     }, this);
-    this.chat.messages = Object.assign([], this.chat.messages);
   }
 
   public updateIncomeMessagesStatus(changedMessageIds: any, status: string){
@@ -90,8 +112,7 @@ export class AngularChatFooterComponent {
     this.chat.messages = this.chat.messages.map((x: any) => {
       if(changedMessageIds.find((msg: any) => msg.id == x.id)) x.status = status;
       return x;
-    })
-
+    });
   }
 
   public saveNewIncomeMessage(message: any){
