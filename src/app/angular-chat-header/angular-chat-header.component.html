@@ -5,15 +5,15 @@
         </button>
     </mat-grid-tile>    
     <mat-grid-tile [rowspan]="1" [colspan]="4">
-        <div class="name" (click)="onOpenCard({id: chat.contact.id, schemaName: 'Contact'})" ><mat-icon>person</mat-icon><p class="name-text">{{ chat.contact.name }}</p></div>
+        <div class="name" (click)="onOpenCard({id: chat.contact.id, schemaName: 'Contact'})" ><mat-icon>person</mat-icon><p class="name-text">{{ chat?.contact?.name }}</p></div>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="1" [colspan]="4">
-        <div class="name" *ngIf="chat.relatedObject.displayName !== ''" (click)="onOpenCard({id: chat.relatedObject.id, schemaName: chat.relatedObject.name})">
-            <mat-icon>work</mat-icon><p class="name-text">{{ chat.relatedObject.displayName }}</p>
+        <div class="name" *ngIf="chat?.relatedObject?.displayName !== ''" (click)="onOpenCard({id: chat.relatedObject.id, schemaName: chat.relatedObject.name})">
+            <mat-icon>work</mat-icon><p class="name-text">{{ chat?.relatedObject?.displayName }}</p>
         </div>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="1" [colspan]="4">
-        <div class="name" (click)="onOpenCard({id: chat.chat.id, schemaName: 'GoMsgChat'})"><mat-icon>chat</mat-icon><p class="name-text">{{ chat.chat.name }}</p></div>
+        <div class="name" (click)="onOpenCard({id: chat.chat.id, schemaName: 'GoMsgChat'})"><mat-icon>chat</mat-icon><p class="name-text">{{ chat?.chat?.name }}</p></div>
     </mat-grid-tile>
 </mat-grid-list>
 

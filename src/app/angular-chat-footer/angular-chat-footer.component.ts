@@ -21,11 +21,11 @@ export class AngularChatFooterComponent {
   
   public isHasTodayIncometMessage(){
     let currentUserTime = this.getCurrentUserTimeStamp();
-    return this.chat.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
+    return this.chat?.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
   }
 
   public isTelegramMessanger(){
-    return false;//this.constants.Messanger.Code.telegram === this.chat.channel.code;
+    return this.constants.Messanger.Code.telegram === this.chat?.channel?.code;
   }
 
   public get isHideWelconeMessageBtn(){

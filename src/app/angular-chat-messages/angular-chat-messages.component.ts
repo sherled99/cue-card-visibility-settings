@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, ElementRef} from '@angular/core';
 import {ConvertDateService} from '../services/convert-date.service';
 import {TranslateByLocale} from '../services/translate-by-locate.service'
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-angular-chat-messages',
@@ -12,18 +13,31 @@ export class AngularChatMessagesComponent {
   @ViewChild('chatListContainer') list?: ElementRef<HTMLDivElement>;
   @Input() chat: any;
   @Input() locale: any;
+  @Input() public serviceHelper : any;
 
-  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale){}
+  public arrayClassNameByMessage: any = 
+  {
+    'inbound': 'message sender bubble-arrow-sender',
+    'outbound': 'message receiver bubble-arrow-receiver',
+    'media': 'media-message',
+    'delimiter': 'delimiter'
+  }
+
+  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale, private sanitizer: DomSanitizer){}
 
   public get isHasNoMessage(){
     return this.chat.messages?.length === 0;
   }
 
   addDateToMessage(listMessage: any){
+    let result: any = []; 
+
+    if(!listMessage) return result;
+
     let today = new Date().setHours(0,0,0,0);
     let prevDate = 0;
     let months = this.translateRecord.getTranslateWord(this.locale, 'month');
-    let result: any = []; 
+    
     for(let i=0; i < listMessage.length; i++){
       let messageDate = new Date(listMessage[i].unixDate).setHours(0,0,0,0);
       if(messageDate != prevDate){
@@ -54,11 +68,22 @@ export class AngularChatMessagesComponent {
     return mess.split('\n').join('<br>'); 
   }
 
-  public arrayClassNameByMessage: any = 
-  {
-    'inbound': 'message sender bubble-arrow-sender',
-    'outbound': 'message receiver bubble-arrow-receiver',
-    'media': 'media-message',
-    'delimiter': 'delimiter'
+  downloadFile(messageId: any){
+    this.serviceHelper.callService({
+        serviceName: "GoChatService",
+        methodName: "GetMedia",
+        callback: function(result: any) {
+          console.log('messageId ', result);
+          const src = `${result.data}`;
+          const link = document.createElement("a");
+          link.href = src;
+          link.download = result.filename? result.filename : 'file.png';
+          link.click();
+          link.remove();
+          
+        },
+        scope: this,
+        data: messageId
+    }, this);
   }
 }

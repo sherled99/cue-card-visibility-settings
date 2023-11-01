@@ -1,6 +1,8 @@
 <div class="container" *ngIf="isShowChatList; else isShowChat">
     <app-angular-chat-list-chats [chatList]="chatList"
-                                    (isShowChat)="openChat($event)"
+                                 (showChat)="showChat($event)"
+                                 (loadMoreChats)="loadMoreChats()"
+
     ></app-angular-chat-list-chats>
     </div>
 
@@ -15,6 +17,7 @@
         <mat-grid-tile [rowspan]="18">
             <app-angular-chat-messages [chat]="chat"
                                         [locale]="locale"
+                                        [serviceHelper]="serviceHelper"
             ></app-angular-chat-messages>
         </mat-grid-tile>
         <mat-grid-tile [rowspan]="3">    

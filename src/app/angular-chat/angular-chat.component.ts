@@ -25,22 +25,27 @@ export class AngularChatComponent {
 
   @Output() openCardClick = new EventEmitter<any>(); 
   @Output() refreshChatList = new EventEmitter<any>(); 
+  @Output() refreshChat = new EventEmitter<any>(); 
+  @Output() loadMoreChatList = new EventEmitter<any>(); 
 
 
-  @Input() public set openchat(chat: any){
+  @Input() public set openChat(chat: any){
+    console.log('openChat ', chat);
     this.chat = chat;
     this.isShowChatList = false;
     this.readIncomeMessages();
   }
 
-  @Input() public set newincomemessage(message: any){
+  @Input() public set newIncomeMessage(message: any){
     if(this.lastNewIncomeMessageId == message.id) return;
     
     this.lastNewIncomeMessageId = message.id;
 
-    if((this.isShowChatList || !this.isGoAngularChatSelected) && this.chatList.find((el: any) => el.id === message.chatId)) {
-      this.getChatList();
-      this.browserNotification();
+    if((this.isShowChatList || !this.isGoAngularChatSelected)) {
+      this.getChat({chatId: message.chatId});
+      if(this.chatList.find((el: any) => el.id === message.chatId)){
+        this.browserNotification();
+      }
     } 
     if(this.chat?.chat?.id === message.chatId){
       this.ChatFooter.saveNewIncomeMessage(message);
@@ -49,7 +54,7 @@ export class AngularChatComponent {
     }
   }
 
-  @Input() public set updateStatusmessage(message: any){
+  @Input() public set updateStatusMessage(message: any){
     this.chat.messages.find(x => x.id === message.id).status = message.status;
   }
 
@@ -76,13 +81,9 @@ export class AngularChatComponent {
     this.zone.run(() => this.chat = Object.assign({}, this.chat));
   }
 
-  public onOpenCard(eventData: any) {
-    this.openCardClick.emit(eventData);
-  }
-
-  public openChat(event: any){
+  public showChat(event: any){
     this.isShowChatList = false;
-    this.serviceHelper.callService("GoChatService", "OpenChat", (response: any) => {}, event, this);
+    this.serviceHelper.callService("GoChatService", "OpenChat", (response: any) => {console.log(response)}, event, this);
   }
 
   public showChatList(){
@@ -103,7 +104,19 @@ export class AngularChatComponent {
     }
   }
 
+  public onOpenCard(eventData: any) {
+    this.openCardClick.emit(eventData);
+  }
+
   getChatList(){
     this.refreshChatList.emit();
+  }
+
+  getChat(eventData: any){
+    this.refreshChat.emit(eventData);
+  }
+
+  loadMoreChats(){
+    this.loadMoreChatList.emit();
   }
 }
