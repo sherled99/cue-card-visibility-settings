@@ -20,11 +20,11 @@
         </div>
     </mat-grid-tile>
         <div class="right-button">
-            <button class="bar-button" (click)="showElementsArray()">
+            <button class="bar-button" (click)="showRelatedLinks()">
                 <mat-icon style="font-size: 30px;">more_vert</mat-icon>
             </button>
-            <div class="dropdown-content" *ngIf="showElements">
-                <div *ngFor="let item of elemetsArray">
+            <div class="dropdown-content" *ngIf="isShowRelatedLinks">
+                <div *ngFor="let item of relatedLinks">
                     <a href="#">{{item}}</a>
                 </div>
             </div>

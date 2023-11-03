@@ -7,11 +7,10 @@ import { Component, Input, Output, EventEmitter} from '@angular/core';
 })
 export class AngularChatHeaderComponent{
   @Input() chat: any;
+  @Input() relatedLinks = [];
   @Output() backToListChat = new EventEmitter();
   @Output() cardClick = new EventEmitter<any>(); 
-  public showElements = false;
-
-  elemetsArray = ['Первый', 'Второй', 'Третий'];
+  public isShowRelatedLinks = false;
 
   backToAllList(event: any){
     this.backToListChat.emit(null);
@@ -21,9 +20,8 @@ export class AngularChatHeaderComponent{
     this.cardClick.emit(eventData);
   }
 
-  public showElementsArray(){
-    console.log('elements');
-    this.showElements = !this.showElements;
+  public showRelatedLinks(){
+    this.isShowRelatedLinks = !this.isShowRelatedLinks;
   }
 
 

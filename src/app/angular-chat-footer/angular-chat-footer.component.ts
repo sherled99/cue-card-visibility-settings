@@ -131,7 +131,8 @@ export class AngularChatFooterComponent {
           status: 'new',
           id: result.media_id,
           isSkipUTC: true,
-          chatId: this.chat.chat.id
+          chatId: this.chat.chat.id,
+          fileName: fileName
         };
         console.log('newMsg ', newMsg);
 
