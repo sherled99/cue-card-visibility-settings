@@ -22,6 +22,7 @@ export class AngularChatComponent {
   @Input() public chatList: DTO_ChatList[] = [];
   @Input() public chat: DTO_Chat = new DTO_Chat;
   @Input() lastNewIncomeMessageId: any;  
+  @Input() public rowspanInput = 1;
 
   @Output() openCardClick = new EventEmitter<any>(); 
   @Output() refreshChatList = new EventEmitter<any>(); 
@@ -77,17 +78,26 @@ export class AngularChatComponent {
     }, this);
   }
 
+  onEditRowspanInput(){
+    if(this.rowspanInput < 4) this.rowspanInput += 1;
+  }
+
+  onResetRowspanInput(){
+    this.rowspanInput = 1;
+  }
+
   onRefreshMessages(event: any){
     this.zone.run(() => this.chat = Object.assign({}, this.chat));
   }
 
   public showChat(event: any){
     this.isShowChatList = false;
-    this.serviceHelper.callService("GoChatService", "OpenChat", (response: any) => {console.log(response)}, event, this);
+    this.serviceHelper.callService("GoChatService", "OpenChatById", (response: any) => {console.log(response)}, event, this);
   }
 
   public showChatList(){
     this.isShowChatList = true;
+    this.chat = new DTO_Chat;
     this.getChatList();
   }
 

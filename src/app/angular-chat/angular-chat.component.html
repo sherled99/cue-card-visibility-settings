@@ -20,12 +20,14 @@
                                         [serviceHelper]="serviceHelper"
             ></app-angular-chat-messages>
         </mat-grid-tile>
-        <mat-grid-tile [rowspan]="3">    
+        <mat-grid-tile [rowspan]="rowspanInput">    
             <app-angular-chat-footer [chat]="chat"
                                         [locale]="locale"
                                         [sandbox]="sandbox"
                                         [terrasoft]="terrasoft"
                                         [serviceHelper]="serviceHelper"
+                                        (editRowspanInput)="onEditRowspanInput()"
+                                        (resetRowspanInput)="onResetRowspanInput()"
                                         (refresMessages)="onRefreshMessages($event)"
             ></app-angular-chat-footer>
         </mat-grid-tile>                        

@@ -4,16 +4,30 @@
             <i class="arrow left"></i>
         </button>
     </mat-grid-tile>    
-    <mat-grid-tile [rowspan]="1" [colspan]="4">
-        <div class="name" (click)="onOpenCard({id: chat.contact.id, schemaName: 'Contact'})" ><mat-icon>person</mat-icon><p class="name-text">{{ chat?.contact?.name }}</p></div>
+    <mat-grid-tile [rowspan]="2" [colspan]="2">
+            <span class="avatar-circle-image">
+                <!-- <img src="/your-image.jpg"/> -->
+            </span>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="1" [colspan]="4">
-        <div class="name" *ngIf="chat?.relatedObject?.displayName !== ''" (click)="onOpenCard({id: chat.relatedObject.id, schemaName: chat.relatedObject.name})">
-            <mat-icon>work</mat-icon><p class="name-text">{{ chat?.relatedObject?.displayName }}</p>
+        <div class="name" (click)="onOpenCard({id: chat.contact.id, schemaName: 'Contact'})" >
+            <p class="name-text">{{ chat.contact.name }}</p>
         </div>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="1" [colspan]="4">
-        <div class="name" (click)="onOpenCard({id: chat.chat.id, schemaName: 'GoMsgChat'})"><mat-icon>chat</mat-icon><p class="name-text">{{ chat?.chat?.name }}</p></div>
+        <div class="name" (click)="onOpenCard({id: chat.chat.id, schemaName: 'GoMsgChat'})">
+            <p class="chat-name-text">{{ chat.chat.name }}</p>
+        </div>
     </mat-grid-tile>
+        <div class="right-button">
+            <button class="bar-button" (click)="showElementsArray()">
+                <mat-icon style="font-size: 30px;">more_vert</mat-icon>
+            </button>
+            <div class="dropdown-content" *ngIf="showElements">
+                <div *ngFor="let item of elemetsArray">
+                    <a href="#">{{item}}</a>
+                </div>
+            </div>
+        </div>
 </mat-grid-list>
 

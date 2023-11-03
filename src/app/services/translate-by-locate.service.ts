@@ -19,7 +19,8 @@ export class TranslateByLocale {
             'template': {'ru-RU': 'Отправить приветственное сообщение', 'en-US': 'Send a welcome message'},
             'toDay': {'ru-RU': 'Сегодня', 'en-US': 'Today'},
             'noMessage': {'ru-RU': 'Сообщений пока нет...', 'en-US': 'No messages yet...'},
-            'mediaMessage': {'ru-RU': 'Вам прислали файл или голосовое сообщение', 'en-US': 'You received file or audio message'}
+            'mediaMessageInbound': {'ru-RU': 'Вам прислали файл или голосовое сообщение', 'en-US': 'You received file or audio message'},
+            'mediaMessageOutbound': {'ru-RU': 'Вы отправили файл', 'en-US': 'You sent file'}
         };
 
         return arrayWords[label][locale];

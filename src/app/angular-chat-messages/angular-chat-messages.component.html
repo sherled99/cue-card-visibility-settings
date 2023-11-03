@@ -4,19 +4,19 @@
         <div *ngFor="let message of addDateToMessage(chat.messages)">
             <div [class]="arrayClassNameByMessage[message.send_type]">    
                 <div *ngIf="message.type == 'media'">
+                    <div class="media-message-container">
                     <span class="media-message-icon material-icons" (click)="downloadFile(message.id)">cloud_download</span>
-                    <div class="media-message" [innerHtml]="translateRecord.getTranslateWord(locale, 'mediaMessage')"></div>
+                    <div class="media-message" [innerHtml]="message.send_type === 'outbound'? translateRecord.getTranslateWord(locale, 'mediaMessageOutbound') 
+                                                                                            : translateRecord.getTranslateWord(locale, 'mediaMessageInbound')"></div>
+                    </div>
                 </div>
                 <div *ngIf="message.type != 'media'" class="message-text" [innerHtml]="checkHrefInMessage(message.text)"></div>
-                <div [class]=" message.send_type == 'delimiter'
+                <div [class]="message.send_type == 'delimiter'
                         ? 'message-time-delimiter'
                         : 'message-time-receiver'">
-                    {{this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)}}
-                </div>
-                <div [class]=" message.send_type == 'delimiter'
-                        ? 'message-time-delimiter'
-                        : 'message-time-receiver'">
-                    {{message.status}}
+                        <div class="container-time-status">
+                            {{this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)}}  {{message.status}}  
+                        </div>
                 </div>
             </div>
         </div>

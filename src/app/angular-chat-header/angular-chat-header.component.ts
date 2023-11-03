@@ -9,6 +9,9 @@ export class AngularChatHeaderComponent{
   @Input() chat: any;
   @Output() backToListChat = new EventEmitter();
   @Output() cardClick = new EventEmitter<any>(); 
+  public showElements = false;
+
+  elemetsArray = ['Первый', 'Второй', 'Третий'];
 
   backToAllList(event: any){
     this.backToListChat.emit(null);
@@ -17,4 +20,11 @@ export class AngularChatHeaderComponent{
   public onOpenCard(eventData: any) {
     this.cardClick.emit(eventData);
   }
+
+  public showElementsArray(){
+    console.log('elements');
+    this.showElements = !this.showElements;
+  }
+
+
 }

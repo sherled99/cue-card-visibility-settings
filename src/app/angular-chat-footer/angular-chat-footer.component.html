@@ -2,12 +2,14 @@
 
 <div *ngIf="isHideWelconeMessageBtn">
     <mat-grid-list cols="20" rowHeight="fit">
-        <mat-grid-tile [colspan]="2"> 
-            <button class="bar-button" (click)="showTemplateLookup(constants.Template.Type.textTemplate)">
-                <mat-icon class="bar-icon">message</mat-icon>
-            </button>
+        <mat-grid-tile [colspan]="2">
+            <div class="footer-btn">
+                <button class="bar-button" (click)="showTemplateLookup(constants.Template.Type.textTemplate)">
+                    <mat-icon class="bar-icon">textsms</mat-icon>
+                </button>
+            </div> 
         </mat-grid-tile>
-        <mat-grid-tile [colspan]="17"> 
+        <mat-grid-tile [colspan]="14"> 
             <textarea
                 lines="5"
                 #input
@@ -15,10 +17,13 @@
                 id="main-input-message"
                 placeholder="{{translateRecord.getTranslateWord(locale, 'placeholder')}}"
                 (keydown.enter)="saveNewOutcomeMessage(input.value, $event)"
+                (keyup)="onChangeInputSize($event)"
             ></textarea>
         </mat-grid-tile>
-        <mat-grid-tile [colspan]="1"> 
-            <button class="bar-button" (click)="saveNewOutcomeMessage(input.value, $event)">
+        <mat-grid-tile [colspan]="4"> 
+            <input type="file" class="bar-button footer-btn" id="inputFile" (change)="uploadFileFromInput($event)" style="display: none;" >
+            <label for="inputFile" class="bar-button footer-btn"> <mat-icon class="bar-icon">attach_file</mat-icon> </label>
+            <button class="bar-button footer-btn" (click)="saveNewOutcomeMessage(input.value, $event)">
                 <mat-icon class="bar-icon">send</mat-icon>
             </button>
         </mat-grid-tile>    

@@ -13,6 +13,9 @@ export class AngularChatFooterComponent {
   @Input() public serviceHelper : any;
   @Input() terrasoft: any;
   @Input() sandbox: any;
+
+  @Output() editRowspanInput = new EventEmitter<any>();
+  @Output() resetRowspanInput = new EventEmitter<any>();
   @Output() refresMessages = new EventEmitter<any>();
 
   readonly constants = Constants;
@@ -64,6 +67,7 @@ export class AngularChatFooterComponent {
     let inputValue = (document.getElementById('main-input-message') as HTMLInputElement) !== null
                       ? (document.getElementById('main-input-message') as HTMLInputElement): {value: ' '};
     inputValue.value = ''; 
+    this.resetRowspanInput.emit();
 
     let args:Record<string, any>  = {
       chatId: this.chat.chat.id,
@@ -106,9 +110,51 @@ export class AngularChatFooterComponent {
     }, this);
   }
 
+  
+  async uploadFileFromInput(event: any){
+    const file = event.target.files[0];
+    let imageString = await this.convertBase64(file);
+    let args:Record<string, any>  = {
+      messageId: this.chat.chat.id,
+      data: imageString
+    };
+
+    this.serviceHelper.callService({
+      serviceName: "GoChatService",
+      methodName: "UploadMedia",
+      callback: function(result: any) {
+        let newMsg = {
+          type: 'media',
+          unixDate: new Date(),
+          text: imageString,
+          send_type: 'outbound',
+          status: 'new',
+          id: result.media_id,
+          isSkipUTC: true,
+          chatId: this.chat.chat.id
+        };
+        console.log('newMsg ', newMsg);
+
+        this.chat.messages.push(newMsg);
+      },
+      scope: this,
+      data: args
+    }, this);
+  }
+
+
+  convertBase64 (file: any) {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => resolve(fileReader.result);
+      fileReader.onerror = (error) => reject(error);
+    });
+  };
+
+
   public updateIncomeMessagesStatus(changedMessageIds: any, status: string){
     if(changedMessageIds?.length == 0) return;
-
     this.chat.messages = this.chat.messages.map((x: any) => {
       if(changedMessageIds.find((msg: any) => msg.id == x.id)) x.status = status;
       return x;
@@ -167,5 +213,15 @@ export class AngularChatFooterComponent {
       this.refresMessages.emit({});
     }, this);
   }
+
+  onChangeInputSize(event: any){
+    if(event.target.scrollTop > 0){
+      this.editRowspanInput.emit();
+    }
+    if(event.target.value == ''){
+      this.resetRowspanInput.emit();
+    }
+  }
+
 }
 

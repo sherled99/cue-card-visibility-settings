@@ -1,7 +1,6 @@
 import { Component, Input, ViewChild, ElementRef} from '@angular/core';
 import {ConvertDateService} from '../services/convert-date.service';
 import {TranslateByLocale} from '../services/translate-by-locate.service'
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-angular-chat-messages',
@@ -17,13 +16,13 @@ export class AngularChatMessagesComponent {
 
   public arrayClassNameByMessage: any = 
   {
-    'inbound': 'message sender bubble-arrow-sender',
-    'outbound': 'message receiver bubble-arrow-receiver',
+    'inbound': 'message sender',
+    'outbound': 'message receiver',
     'media': 'media-message',
     'delimiter': 'delimiter'
   }
 
-  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale, private sanitizer: DomSanitizer){}
+  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale){}
 
   public get isHasNoMessage(){
     return this.chat.messages?.length === 0;
