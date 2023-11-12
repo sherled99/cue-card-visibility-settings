@@ -4,12 +4,7 @@
             <i class="arrow left"></i>
         </button>
     </mat-grid-tile>    
-    <mat-grid-tile [rowspan]="2" [colspan]="2">
-            <span class="avatar-circle-image">
-                <!-- <img src="/your-image.jpg"/> -->
-            </span>
-    </mat-grid-tile>
-    <mat-grid-tile [rowspan]="1" [colspan]="4">
+    <mat-grid-tile [rowspan]="1" [colspan]="6">
         <div class="name" (click)="onOpenCard({id: chat.contact.id, schemaName: 'Contact'})" >
             <p class="name-text">{{ chat.contact.name }}</p>
         </div>
