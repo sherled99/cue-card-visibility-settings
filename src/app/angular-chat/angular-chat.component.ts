@@ -23,6 +23,7 @@ export class AngularChatComponent {
   @Input() public chat: DTO_Chat = new DTO_Chat;
   @Input() lastNewIncomeMessageId: any;  
   @Input() public rowspanInput = 1;
+  @Input() chatRelatedLinks: any;
 
   @Output() openCardClick = new EventEmitter<any>(); 
   @Output() refreshChatList = new EventEmitter<any>(); 
@@ -58,6 +59,12 @@ export class AngularChatComponent {
   @Input() public set updateStatusMessage(message: any){
     this.chat.messages.find(x => x.id === message.id).status = message.status;
   }
+
+  @Input() public set relatedLinksChat(links: any){
+    this.chatRelatedLinks = links;
+    console.log('this.chatRelatedLinks', this.chatRelatedLinks)
+  }
+
 
   @Input() public readIncomeMessages(){
     if(this.chat.access == 'read' || !this.isGoAngularChatSelected) return;

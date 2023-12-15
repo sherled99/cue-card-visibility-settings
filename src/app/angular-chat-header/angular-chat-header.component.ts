@@ -3,11 +3,11 @@ import { Component, Input, Output, EventEmitter} from '@angular/core';
 @Component({
   selector: 'app-angular-chat-header',
   templateUrl: './angular-chat-header.component.html',
-  styleUrls: ['../angular-chat/angular-chat.component.scss']
+  styleUrls: ['../angular-chat/angular-chat.component.scss'],
 })
 export class AngularChatHeaderComponent{
   @Input() chat: any;
-  @Input() relatedLinks = [];
+  @Input() chatRelatedLinks: any;
   @Output() backToListChat = new EventEmitter();
   @Output() cardClick = new EventEmitter<any>(); 
   public isShowRelatedLinks = false;
@@ -18,11 +18,15 @@ export class AngularChatHeaderComponent{
 
   public onOpenCard(eventData: any) {
     this.cardClick.emit(eventData);
+    this.isShowRelatedLinks = false;
   }
 
   public showRelatedLinks(){
     this.isShowRelatedLinks = !this.isShowRelatedLinks;
   }
 
+  public hideRelatedLinksByOutsideClick(event: any){
+    if(this.isShowRelatedLinks && event.target.id !== 'btn-show-related-links') this.isShowRelatedLinks = false;
+  }
 
 }

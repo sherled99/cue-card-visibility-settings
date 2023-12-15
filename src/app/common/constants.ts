@@ -14,6 +14,7 @@ export namespace Constants
         export class Status
         {
             public static answered = '50a6901f-ec9f-419e-bfb0-b161ee416674';
+            public static unanswered = '055ac058-8304-42d8-ab4f-083f210e89fc';
         }
     }
 

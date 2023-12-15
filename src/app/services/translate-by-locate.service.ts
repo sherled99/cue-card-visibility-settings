@@ -20,7 +20,8 @@ export class TranslateByLocale {
             'toDay': {'ru-RU': 'Сегодня', 'en-US': 'Today'},
             'noMessage': {'ru-RU': 'Сообщений пока нет...', 'en-US': 'No messages yet...'},
             'mediaMessageInbound': {'ru-RU': 'Вам прислали файл или голосовое сообщение', 'en-US': 'You received file or audio message'},
-            'mediaMessageOutbound': {'ru-RU': 'Вы отправили файл', 'en-US': 'You sent file'}
+            'mediaMessageOutbound': {'ru-RU': 'Вы отправили файл', 'en-US': 'You sent file'},
+            'phonerequest':{'ru-RU': 'Предоставить номер телефона.', 'en-US': 'Provide a phone number.'}
         };
 
         return arrayWords[label][locale];

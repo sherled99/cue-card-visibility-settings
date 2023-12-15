@@ -1,8 +1,3 @@
-@font-face {
-    font-family: "Roboto Regular";
-    src: url("../../assets/fonts/Roboto.ttf");
-}
-
 .container {
 height: 100%;
 width: 99%;
@@ -85,34 +80,85 @@ width: 99%;
 }
 
 .message {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
     border-radius: 8px;
-    font-family: Roboto-Regular;
-    font-size: 16px;
-    max-width: 70%;
-    min-width: 70%;
+    font-size: 15px;
     margin: 10px;
+}
+.message-text a {
+    word-break: break-all;
 }
 
 .message-text {
     z-index: 1;
-    grid-column: 1/4;
-    grid-row: 1/2;
     margin: 8px;
+    margin-right: 10px;
+    text-align: left;
+    overflow-wrap: anywhere;
 }
 
-
 .message-time-receiver {
-    font-size: 13px;
+    font-size: 12px;
     color: #8e8e93;
-    grid-column: 1/4;
-    grid-row: 2/2;
     text-align: end;
-    border-top: 1px #dddddf solid;
     min-height: 20px;
-    display: grid;
-    align-items: center;
+    max-height: 25px;
+    padding-top: 7px !important;
+    padding-left: 7px !important;
+    float: right;
+    margin-bottom: 3px;
+}
+
+.button-read-msg {
+    display: none;
+    position: sticky;
+    left: 95%;
+    border: none;
+    background: none;
+    margin: -30px -25px 0 8px;
+}
+
+.button-read-msg:hover {
+    display: block;
+}
+
+.message-text:hover + .button-read-msg{ 
+    display: block;
+}
+
+.msg-type-buttons-text{
+    min-width: 240px;
+    max-width: 240px;
+}
+
+.button-link-message{
+    width: 70%;
+    min-height: 40px;
+    border-radius: 9px;
+    font-size: 15px;
+    margin: 10px 10px 0px 10px;
+    border: none;
+    background: white;
+    cursor: default;
+}
+
+.button-link-message-entered{
+    width: 70%;
+    min-height: 40px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 10px 10px 0px 10px;
+    border: none;
+    background:white;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.outbound-btns-msg{
+    margin-top: 15%;
+    top: -10px;
+    position: relative;
+    right: -25%;
 }
 
 .delimiter {
@@ -190,16 +236,11 @@ width: 99%;
     margin-right: 4px;
 }
 
-.container-time-status{
-    margin: 4px 8px;
-}
-
-
 .message-input {
     width: 100%;
     height: 70%;
     border: none;
-    font-size: 16px;
+    font-size: 15px;
     margin: 10px;
     resize: none;
     outline: none;
@@ -207,7 +248,6 @@ width: 99%;
 
 .footer-btn{
     display: flex;
-    // position: absolute;
     bottom: 0;
 }
 
@@ -258,13 +298,13 @@ width: 99%;
     object-fit: cover;
 }
 .text {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .name {
     display: flex;
     align-items: center;
-    font-size: 14px;
+    font-size: 15px;
     color: black;
     cursor: pointer;
     width: 97%;
@@ -346,23 +386,24 @@ width: 99%;
     position: unset;
 }
 
-.media-message-container {
-    min-width: 180%;
-    height: 35px;
-    display: grid;
-    margin: 8px;
-    text-align: center;
-    align-items: center;
-    justify-content: start;
+.outbound-media{
+    width: 99%;
+}
 
+.media-message-container {
+    min-height: 35px;
+    margin: 8px;
 }
 
 .media-message {
     z-index: 1;
     font-style: italic;
-    color: sienna;
     margin-left: 40px;
+    font-weight: 600;
+    text-align: left;
+    font-size: 14px;
 }
+
 .media-message-icon {
     position: absolute;
     font-size: 36px;
@@ -385,16 +426,19 @@ width: 99%;
     z-index: 1;
     top: 4.5%;
     right: 4.5%;
+    cursor: pointer;
 }
 
 /* Ссылки внутри выпадающего списка */
-.dropdown-content a {
+.dropdown-content p {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    font-size: medium;
+    margin: 0;
 }
 
-.dropdown-content a:hover {
+.dropdown-content p:hover {
     background-color: #ddd
 }

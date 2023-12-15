@@ -1,11 +1,13 @@
-import { Component, Input, ViewChild, ElementRef} from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import {ConvertDateService} from '../services/convert-date.service';
-import {TranslateByLocale} from '../services/translate-by-locate.service'
+import {TranslateByLocale} from '../services/translate-by-locate.service';
+import { Constants } from '../common/constants';
 
 @Component({
   selector: 'app-angular-chat-messages',
   templateUrl: './angular-chat-messages.component.html',
-  styleUrls: ['../angular-chat/angular-chat.component.scss']
+  styleUrls: ['../angular-chat/angular-chat.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class AngularChatMessagesComponent {  
@@ -13,6 +15,7 @@ export class AngularChatMessagesComponent {
   @Input() chat: any;
   @Input() locale: any;
   @Input() public serviceHelper : any;
+  readonly constants = Constants;
 
   public arrayClassNameByMessage: any = 
   {
@@ -58,13 +61,50 @@ export class AngularChatMessagesComponent {
     this.list?.nativeElement.scrollTo({top: maxScroll, behavior: 'auto'});
   }
 
+  parseMsgConfigToBtns(messageConfig: any){
+    return JSON.parse(messageConfig.replace(/;/g, ',')).buttons;
+  }
+
+  processMessage(message: any){
+   // if(message.type == 'phonerequest') return `${this.translateRecord.getTranslateWord(this.locale, 'phonerequest')} ${this.addDateAndStatusToMessage(message)}`;
+    return `${this.checkHrefInMessage(message.text)} ${this.addDateAndStatusToMessage(message)}`;
+  }
+
+  processMediaMessage(message:any){
+    return `${this.checkSendTypeMediaMessage(message)}`;
+  }
+
+  checkSendTypeMediaMessage(message: any){
+    let textMsg  = message.send_type === 'outbound'
+                                        ? message.text 
+                                        : this.translateRecord.getTranslateWord(this.locale, 'mediaMessageInbound');
+
+    let msgClass = message.send_type === 'outbound'
+                                        ? 'outbound-media' 
+                                        : '';
+
+    return `<div class=${msgClass}>${textMsg} ${this.addDateAndStatusToMessage(message)}</div>`;
+    
+  }
+  addDateAndStatusToMessage(message: any){
+    return `
+      <div class="${message.send_type == 'delimiter'
+                                      ? 'message-time-delimiter'
+                                      : 'message-time-receiver'}">
+        <div class="container-time-status">
+            ${this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)} ${message.status}  
+        </div>
+      </div>
+      `
+  }
+
   checkHrefInMessage(mess: string){
-    let regExp = new RegExp(/(((http|https):\/\/)|(www.))([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^={}%&:\/~+#-]*[\w@?^=%&\/~+#}-])/g);
+    let regExp = new RegExp(/(((http|https):\/\/)|(www.))([0-9a-zA-Zа-яёА-ЯЁ_-]+(?:(?:\.[0-9a-zA-Zа-яёА-ЯЁ_-]+)+))([\w.,@?^={}%&:\/~+#-]*[\w@?^=%&\/~+#}-])/g);
     let result = mess.match(regExp) || [];
     for(let i = 0; i < result.length; i++){
       mess = mess.replace( result[i], `<a href=${result[i]}>${result[i]}</a>`);
     };
-    return mess.split('\n').join('<br>'); 
+    return mess.split('\n').join('<br>');                
   }
 
   downloadFile(messageId: any){
@@ -83,6 +123,23 @@ export class AngularChatMessagesComponent {
         },
         scope: this,
         data: messageId
+    }, this);
+  }
+
+  changeMsgStatusToAnswered(event: any){
+    this.serviceHelper.callService({
+      serviceName: "GoChatService",
+      methodName: "ChangeMessageStatus",
+      callback: function(messageIds: any) {
+        console.log('cтатус изменен')
+        //this.updateIncomeMessagesStatus(messageIds, 'answered');
+      },
+      scope: this,
+      data: {
+              chatId: this.chat.chat.id,
+              msgIds: [event.target.parentNode.id],
+              newStatusId: this.constants.Message.Status.unanswered
+            }
     }, this);
   }
 }

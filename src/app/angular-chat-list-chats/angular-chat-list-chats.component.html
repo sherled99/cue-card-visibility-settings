@@ -1,6 +1,7 @@
 <div class="container" (scroll)="onScroll($event)">
     <div class="conversation-list" *ngFor="let chat of chatList">
         <div class="conversation" [id]="chat.id" (click)="showChatHandle({chatId: chat.id})">
+            <div [class]="chat.channel.code == 'telegram' ? 'telegram-icon' : 'whatsapp-icon'"></div>
             <div class="conversation-text">
                 <div class="conversation-title">{{ chat.contact.name }}</div>
                 <div class="conversation-title">{{ chat.channel.name }}</div>

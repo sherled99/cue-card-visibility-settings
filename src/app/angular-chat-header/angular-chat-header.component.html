@@ -6,21 +6,23 @@
     </mat-grid-tile>    
     <mat-grid-tile [rowspan]="1" [colspan]="6">
         <div class="name" (click)="onOpenCard({id: chat.contact.id, schemaName: 'Contact'})" >
-            <p class="name-text">{{ chat.contact.name }}</p>
+            <p class="name-text">{{ chat.contact?.name }}</p>
         </div>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="1" [colspan]="4">
         <div class="name" (click)="onOpenCard({id: chat.chat.id, schemaName: 'GoMsgChat'})">
-            <p class="chat-name-text">{{ chat.chat.name }}</p>
+            <p class="chat-name-text">{{ chat.chat?.name }}</p>
         </div>
     </mat-grid-tile>
         <div class="right-button">
-            <button class="bar-button" (click)="showRelatedLinks()">
-                <mat-icon style="font-size: 30px;">more_vert</mat-icon>
+            <button class="bar-button" (click)="showRelatedLinks()" >
+                <mat-icon style="font-size: 30px;" id="btn-show-related-links">more_vert</mat-icon>
             </button>
             <div class="dropdown-content" *ngIf="isShowRelatedLinks">
-                <div *ngFor="let item of relatedLinks">
-                    <a href="#">{{item}}</a>
+                <div (clickOutside)="hideRelatedLinksByOutsideClick($event)">
+                    <div *ngFor="let item of chatRelatedLinks">
+                        <p *ngIf="item.displayName !== ''" (click)="onOpenCard({id: item.name, schemaName: item.schemaName})">{{item.displayName}}</p>
+                    </div>
                 </div>
             </div>
         </div>

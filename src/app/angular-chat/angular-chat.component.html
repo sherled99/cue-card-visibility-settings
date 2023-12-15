@@ -10,6 +10,7 @@
     <mat-grid-list cols="1" rowHeight="fit">
         <mat-grid-tile [rowspan]="1">
             <app-angular-chat-header [chat]="chat"
+                                        [chatRelatedLinks]="chatRelatedLinks"
                                         (cardClick)="onOpenCard($event)"
                                         (backToListChat)="showChatList()"
             ></app-angular-chat-header>

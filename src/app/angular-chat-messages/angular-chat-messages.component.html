@@ -5,19 +5,26 @@
             <div [class]="arrayClassNameByMessage[message.send_type]">    
                 <div *ngIf="message.type == 'media'">
                     <div class="media-message-container">
-                    <span class="media-message-icon material-icons" (click)="downloadFile(message.id)">cloud_download</span>
-                    <div class="media-message" [innerHtml]="message.send_type === 'outbound'? message.fileName
-                                                                                            : translateRecord.getTranslateWord(locale, 'mediaMessageInbound')">
+                    <span class="media-message-icon material-icons" (click)="downloadFile(message.id)">download_for_offline</span>
+                        <div class="media-message" [innerHtml]="processMediaMessage(message)"></div>
                     </div>
                 </div>
+                <div *ngIf="message.type != 'media' && message.type != 'phonerequest'" [class]="message.type == 'buttons' ? 'msg-type-buttons-text message-text' : 'message-text'" [innerHtml]="processMessage(message)"></div>
+                <div *ngIf="message.type == 'phonerequest'" class="msg-type-buttons-text message-text" [innerHtml]="processMessage(message)"></div>
+                <button class="message-time-receiver button-read-msg" *ngIf="message.send_type === 'inbound' && (message.status === 'new' || message.status === 'seen')" [id]="message.id" (click)="changeMsgStatusToAnswered($event)">
+                    <mat-icon>remove_red_eye</mat-icon>
+                </button>
+            </div>
+            <div *ngIf="message.type === 'buttons'">
+                <div [class]="message.send_type == 'outbound' ? 'outbound-btns-msg' : 'inbound-btns-msg'">
+                    <div *ngFor="let item of parseMsgConfigToBtns(message.config)">
+                        <button [class]="item.id === message.answerId ? 'button-link-message-entered' : 'button-link-message'" [id]="item.id">{{item.text}}</button>
+                    </div>
                 </div>
-                <div *ngIf="message.type != 'media'" class="message-text" [innerHtml]="checkHrefInMessage(message.text)"></div>
-                <div [class]="message.send_type == 'delimiter'
-                        ? 'message-time-delimiter'
-                        : 'message-time-receiver'">
-                        <div class="container-time-status">
-                            {{this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)}}  {{message.status}}  
-                        </div>
+            </div>
+            <div *ngIf="message.type === 'phonerequest'">
+                <div [class]="message.send_type == 'outbound' ? 'outbound-btns-msg' : 'inbound-btns-msg'">
+                    <button class="button-link-message">{{translateRecord.getTranslateWord(locale, 'phonerequest')}}</button>
                 </div>
             </div>
         </div>

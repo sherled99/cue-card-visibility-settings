@@ -13,10 +13,11 @@ import { AngularChatFooterComponent } from './angular-chat-footer/angular-chat-f
 import { AngularChatMessagesComponent } from './angular-chat-messages/angular-chat-messages.component';
 import { AngularChatListChatsComponent } from './angular-chat-list-chats/angular-chat-list-chats.component';
 import {MatBadgeModule} from '@angular/material/badge';
+import { NgClickOutsideDirective } from 'ng-click-outside2';
 
 @NgModule({
   declarations: [ AppComponent, AngularChatComponent, AngularChatHeaderComponent, AngularChatFooterComponent, AngularChatMessagesComponent, AngularChatListChatsComponent],
-  imports: [ BrowserModule, BrowserAnimationsModule, MatIconModule, MatDividerModule, MatListModule, MatBadgeModule, MatGridListModule], 
+  imports: [ BrowserModule, BrowserAnimationsModule, MatIconModule, MatDividerModule, MatListModule, MatBadgeModule, MatGridListModule, NgClickOutsideDirective], 
   //bootstrap: [AppComponent]
 })
 

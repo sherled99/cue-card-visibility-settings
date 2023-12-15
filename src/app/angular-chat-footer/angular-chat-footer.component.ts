@@ -115,7 +115,8 @@ export class AngularChatFooterComponent {
     const file = event.target.files[0];
     let imageString = await this.convertBase64(file);
     let args:Record<string, any>  = {
-      messageId: this.chat.chat.id,
+      chatId: this.chat.chat.id,
+      filename: fileName,
       data: imageString
     };
 
@@ -126,13 +127,12 @@ export class AngularChatFooterComponent {
         let newMsg = {
           type: 'media',
           unixDate: new Date(),
-          text: imageString,
+          text: fileName,
           send_type: 'outbound',
           status: 'new',
           id: result.media_id,
           isSkipUTC: true,
-          chatId: this.chat.chat.id,
-          fileName: fileName
+          chatId: this.chat.chat.id
         };
         console.log('newMsg ', newMsg);
 
@@ -172,7 +172,9 @@ export class AngularChatFooterComponent {
       send_type: 'inbound',
       status: 'new',
       id: message.id,
-      isSkipUTC: true
+      isSkipUTC: true,
+      config: message.config,
+      answerId: message.answerId
     };
     console.log('saveNewIncomeMessage!!!!!!!', newMsg)
 
