@@ -11,7 +11,7 @@
                 </div>
                 <div *ngIf="message.type != 'media' && message.type != 'phonerequest'" [class]="message.type == 'buttons' ? 'msg-type-buttons-text message-text' : 'message-text'" [innerHtml]="processMessage(message)"></div>
                 <div *ngIf="message.type == 'phonerequest'" class="msg-type-buttons-text message-text" [innerHtml]="processMessage(message)"></div>
-                <button class="message-time-receiver button-read-msg" *ngIf="message.send_type === 'inbound' && (message.status === 'new' || message.status === 'seen')" [id]="message.id" (click)="changeMsgStatusToAnswered($event)">
+                <button class="message-time-receiver button-read-msg" *ngIf="message.send_type === 'inbound' && (message.status !== 'answered' && message.status !== 'unanswered')" [id]="message.id" (click)="changeMsgStatusToAnswered($event)">
                     <mat-icon>remove_red_eye</mat-icon>
                 </button>
             </div>

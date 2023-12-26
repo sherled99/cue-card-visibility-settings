@@ -109,7 +109,7 @@ width: 99%;
 }
 
 .button-read-msg {
-    display: none;
+    display: block;
     position: sticky;
     left: 95%;
     border: none;
@@ -117,13 +117,17 @@ width: 99%;
     margin: -30px -25px 0 8px;
 }
 
-.button-read-msg:hover {
-    display: block;
+.button-read-msg:active {
+    color: red;
 }
 
-.message-text:hover + .button-read-msg{ 
-    display: block;
-}
+// .button-read-msg:hover {
+//     display: block;
+// }
+
+// .message-text:hover + .button-read-msg{ 
+//     display: block;
+// }
 
 .msg-type-buttons-text{
     min-width: 240px;

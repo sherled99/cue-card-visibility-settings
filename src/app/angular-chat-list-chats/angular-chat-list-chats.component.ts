@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import {ConvertDateService} from '../services/convert-date.service';
 
 @Component({
   selector: 'app-angular-chat-list-chats',
@@ -9,6 +10,8 @@ export class AngularChatListChatsComponent {
   @Input() chatList: any;
   @Output() showChat = new EventEmitter();
   @Output() loadMoreChats = new EventEmitter();
+
+  constructor(public convertDate: ConvertDateService){}
 
   showChatHandle(event: any){
     this.showChat.emit(event);

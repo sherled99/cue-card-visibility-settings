@@ -46,13 +46,13 @@ export class AngularChatComponent {
     if((this.isShowChatList || !this.isGoAngularChatSelected)) {
       this.getChat({chatId: message.chatId});
       if(this.chatList.find((el: any) => el.id === message.chatId)){
-        this.browserNotification();
+        this.browserNotification(message);
       }
     } 
     if(this.chat?.chat?.id === message.chatId){
       this.ChatFooter.saveNewIncomeMessage(message);
       this.readIncomeMessages();
-      this.browserNotification();
+      this.browserNotification(message);
     }
   }
 
@@ -108,12 +108,14 @@ export class AngularChatComponent {
     this.getChatList();
   }
 
-  public browserNotification(){
+  public browserNotification(message: any){
     if (!("Notification" in window)) {
       console.log("This browser does not support notifications.");
     } else if (Notification.permission === "granted"){
-      const text = "Вам пришло новое сообщение!";
-      const notification = new Notification("Чат с пользователем", { body: text});
+      const notification = new Notification("Чат с пользователем", { body: message.text});
+      notification.onclick = (event) => {
+        this.showChat({chatId: message.chatId});
+      };
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then((permission) => {
         console.log(permission);

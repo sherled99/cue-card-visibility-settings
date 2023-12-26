@@ -62,7 +62,16 @@ export class AngularChatMessagesComponent {
   }
 
   parseMsgConfigToBtns(messageConfig: any){
-    return JSON.parse(messageConfig.replace(/;/g, ',')).buttons;
+    if(!messageConfig) return [];
+    let result: any = [];
+    try{
+      return JSON.parse(messageConfig.replace(/;/g, ',')).buttons.length > 0 ? JSON.parse(messageConfig.replace(/;/g, ',')).buttons : result;
+    } catch {
+      console.log('Error parse config message.')
+      return result;
+    }
+
+
   }
 
   processMessage(message: any){
@@ -132,7 +141,7 @@ export class AngularChatMessagesComponent {
       methodName: "ChangeMessageStatus",
       callback: function(messageIds: any) {
         console.log('cтатус изменен')
-        //this.updateIncomeMessagesStatus(messageIds, 'answered');
+        //this.updateIncomeMessagesStatus(messageIds, 'unanswered');
       },
       scope: this,
       data: {

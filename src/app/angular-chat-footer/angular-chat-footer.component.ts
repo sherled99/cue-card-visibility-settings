@@ -113,13 +113,11 @@ export class AngularChatFooterComponent {
   
   async uploadFileFromInput(event: any){
     const file = event.target.files[0];
-    console.log("File: ", file);
-    
-    let filename = file.name;
+    const fileName = event.target.files[0].name;
     let imageString = await this.convertBase64(file);
     let args:Record<string, any>  = {
       chatId: this.chat.chat.id,
-      filename: filename,
+      filename: fileName,
       data: imageString
     };
 
@@ -130,13 +128,12 @@ export class AngularChatFooterComponent {
         let newMsg = {
           type: 'media',
           unixDate: new Date(),
-          text: filename,
+          text: fileName,
           send_type: 'outbound',
           status: 'new',
           id: result.media_id,
           isSkipUTC: true,
-          chatId: this.chat.chat.id,
-          fileName: filename
+          chatId: this.chat.chat.id
         };
         console.log('newMsg ', newMsg);
 
