@@ -83,6 +83,19 @@
     font-size: 16px;
 }
 
+.info-channel-owner-name{
+    display: flex;
+}
+
+.conversation-title-double {
+    font-weight: 500;
+    font-size: 12px;
+    background: #e9e9e9;
+    border-radius: 15%;
+    padding: 2px 5px;
+    margin-right: 6px;
+}
+
 .conversation-preview {
     color: gray;
     margin-top: 4px;
@@ -98,12 +111,11 @@
 
 .unread-count-span {
     display: inline-block;
-    background: #ccc;
-    color: #000;
+    background: #f00;
     text-align: center;
     border-radius: 50%;
     font-size: 14px;
-    /* padding: 2px 0; */
+    color: white;
     width: 22px;
     height: 22px;
 }
