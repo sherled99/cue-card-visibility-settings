@@ -86,7 +86,7 @@ export class AngularChatComponent {
   }
 
   onEditRowspanInput(){
-    if(this.rowspanInput < 4) this.rowspanInput += 1;
+    if(this.rowspanInput < 12) this.rowspanInput += 1;
   }
 
   onResetRowspanInput(){
