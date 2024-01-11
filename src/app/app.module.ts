@@ -18,7 +18,7 @@ import { NgClickOutsideDirective } from 'ng-click-outside2';
 @NgModule({
   declarations: [ AppComponent, AngularChatComponent, AngularChatHeaderComponent, AngularChatFooterComponent, AngularChatMessagesComponent, AngularChatListChatsComponent],
   imports: [ BrowserModule, BrowserAnimationsModule, MatIconModule, MatDividerModule, MatListModule, MatBadgeModule, MatGridListModule, NgClickOutsideDirective], 
-  //bootstrap: [AppComponent]
+  // bootstrap: [AppComponent]
 })
 
 export class AppModule implements DoBootstrap {
