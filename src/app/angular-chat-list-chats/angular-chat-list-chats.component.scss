@@ -42,11 +42,9 @@
 
 .conversation {
     height: 65px;
-    width: 105%;
     display: flex;
     cursor: pointer;
-    justify-content: center;
-    // align-items: center;
+    justify-content: space-between;
 }
 
 .conversation:hover {
@@ -75,7 +73,8 @@
 }
 
 .conversation-text {
-    width: 60%;
+    flex-grow: 1;
+    width: 10%;
 }
 
 .conversation-title {
