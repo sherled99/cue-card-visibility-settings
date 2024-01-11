@@ -1,7 +1,8 @@
 import { Component, Input, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import {ConvertDateService} from '../services/convert-date.service';
-import {TranslateByLocale} from '../services/translate-by-locate.service';
+import { ConvertDateService } from '../services/convert-date.service';
+import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
+import { DTO_Chat } from '../models/DTO_Chat';
 
 @Component({
   selector: 'app-angular-chat-messages',
@@ -12,7 +13,7 @@ import { Constants } from '../common/constants';
 
 export class AngularChatMessagesComponent {  
   @ViewChild('chatListContainer') list?: ElementRef<HTMLDivElement>;
-  @Input() chat: any;
+  @Input() chat: DTO_Chat = new DTO_Chat();
   @Input() locale: any;
   @Input() public serviceHelper : any;
   readonly constants = Constants;
@@ -25,14 +26,14 @@ export class AngularChatMessagesComponent {
     'delimiter': 'delimiter'
   }
 
-  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale){}
+  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
 
-  public get isHasNoMessage(){
+  public get isHasNoMessage() {
     return this.chat.messages?.length === 0;
   }
 
-  addDateToMessage(listMessage: any){
-    let result: any = []; 
+  addDateToMessage(listMessage: Array<any>) {
+    let result: Array<any> = []; 
 
     if(!listMessage) return result;
 
@@ -40,11 +41,17 @@ export class AngularChatMessagesComponent {
     let prevDate = 0;
     let months = this.translateRecord.getTranslateWord(this.locale, 'month');
     
-    for(let i=0; i < listMessage.length; i++){
+    for(let i = 0; i < listMessage.length; i++) {
       let messageDate = new Date(listMessage[i].unixDate).setHours(0,0,0,0);
-      if(messageDate != prevDate){
+
+      if(!listMessage[i].isSkipUTC) {
+        messageDate = new Date(new Date(listMessage[i].unixDate).getUTCFullYear(), new Date(listMessage[i].unixDate).getUTCMonth(), new Date(listMessage[i].unixDate).getUTCDate()).setHours(0,0,0,0);
+      }
+      
+      if(messageDate != prevDate) {
         prevDate = messageDate;
-        if(messageDate == today){
+
+        if(messageDate == today) {
           result.push({text: `${this.translateRecord.getTranslateWord(this.locale, 'toDay')}`, send_type: 'delimiter'});
         } else {
           result.push({text: `${new Date(messageDate).getDate()} ${months[new Date(messageDate).getMonth()]}`, send_type: 'delimiter'});
@@ -61,7 +68,7 @@ export class AngularChatMessagesComponent {
     this.list?.nativeElement.scrollTo({top: maxScroll, behavior: 'auto'});
   }
 
-  parseMsgConfigToBtns(messageConfig: any){
+  parseMsgConfigToBtns(messageConfig: any) {
     if(!messageConfig) return [];
     let result: any = [];
     try{
@@ -74,40 +81,40 @@ export class AngularChatMessagesComponent {
 
   }
 
-  processMessage(message: any){
+  processMessage(message: any) {
    // if(message.type == 'phonerequest') return `${this.translateRecord.getTranslateWord(this.locale, 'phonerequest')} ${this.addDateAndStatusToMessage(message)}`;
     return `${this.checkHrefInMessage(message.text)} ${this.addDateAndStatusToMessage(message)}`;
   }
 
-  processMediaMessage(message:any){
+  processMediaMessage(message:any) {
     return `${this.checkSendTypeMediaMessage(message)}`;
   }
 
-  checkSendTypeMediaMessage(message: any){
-    let textMsg  = message.send_type === 'outbound'
-                                        ? message.text 
-                                        : this.translateRecord.getTranslateWord(this.locale, 'mediaMessageInbound');
+  checkSendTypeMediaMessage(message: any) {
+    let textMsg  = message.send_type === 'outbound' ?
+      message.text :
+      this.translateRecord.getTranslateWord(this.locale, 'mediaMessageInbound');
 
-    let msgClass = message.send_type === 'outbound'
-                                        ? 'outbound-media' 
-                                        : '';
+    let msgClass = message.send_type === 'outbound' ?
+      'outbound-media' :
+      '';
 
     return `<div class=${msgClass}>${textMsg} ${this.addDateAndStatusToMessage(message)}</div>`;
     
   }
-  addDateAndStatusToMessage(message: any){
+  addDateAndStatusToMessage(message: any) {
     return `
-      <div class="${message.send_type == 'delimiter'
-                                      ? 'message-time-delimiter'
-                                      : 'message-time-receiver'}">
+      <div class="${message.send_type == 'delimiter' ?
+        'message-time-delimiter' :
+        'message-time-receiver'}">
         <div class="container-time-status">
-            ${this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)} ${message.status}  
+            ${this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)} ${message.status}   
         </div>
       </div>
       `
   }
 
-  checkHrefInMessage(mess: string){
+  checkHrefInMessage(mess: string) {
     let regExp = new RegExp(/(((http|https):\/\/)|(www.))([0-9a-zA-Zа-яёА-ЯЁ_-]+(?:(?:\.[0-9a-zA-Zа-яёА-ЯЁ_-]+)+))([\w.,@?^={}%&:\/~+#-]*[\w@?^=%&\/~+#}-])/g);
     let result = mess.match(regExp) || [];
     for(let i = 0; i < result.length; i++){
@@ -116,7 +123,7 @@ export class AngularChatMessagesComponent {
     return mess.split('\n').join('<br>');                
   }
 
-  downloadFile(messageId: any){
+  downloadFile(messageId: any) {
     this.serviceHelper.callService({
         serviceName: "GoChatService",
         methodName: "GetMedia",
@@ -135,7 +142,7 @@ export class AngularChatMessagesComponent {
     }, this);
   }
 
-  changeMsgStatusToAnswered(event: any){
+  changeMsgStatusToAnswered(event: any) {
     this.serviceHelper.callService({
       serviceName: "GoChatService",
       methodName: "ChangeMessageStatus",

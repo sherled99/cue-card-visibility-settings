@@ -15,12 +15,12 @@ export class AngularChatComponent {
 
   @Input() public serviceHelper : any;
   @Input() public ownerId : any;
-  @Input() public locale : any;
+  @Input() public locale : string = "";
   @Input() public isGoAngularChatSelected : any;
   @Input() public terrasoft: any;
   @Input() public sandbox: any;
   @Input() public chatList: DTO_ChatList[] = [];
-  @Input() public chat: DTO_Chat = new DTO_Chat;
+  @Input() public chat: DTO_Chat = new DTO_Chat();
   @Input() lastNewIncomeMessageId: any;  
   @Input() public rowspanInput = 1;
   @Input() chatRelatedLinks: any;
