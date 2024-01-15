@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, ViewEncapsulation, AfterViewInit, SimpleChanges } from '@angular/core';
 import { ConvertDateService } from '../services/convert-date.service';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
@@ -39,6 +39,12 @@ export class AngularChatMessagesComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.scrollToBottom();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["chat"] && this.chat) {
+      this.scrollToBottom();
+    }
   }
 
   addDelimiterToMessage(listMessage: Array<any>) {
