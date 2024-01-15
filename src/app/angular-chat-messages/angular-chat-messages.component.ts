@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, ViewEncapsulation, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { ConvertDateService } from '../services/convert-date.service';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
@@ -11,8 +11,7 @@ import { DTO_Chat } from '../models/DTO_Chat';
   encapsulation: ViewEncapsulation.None
 })
 
-export class AngularChatMessagesComponent {
-  isScroll: boolean = false;
+export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
   constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
 
   readonly constants = Constants;
@@ -25,6 +24,20 @@ export class AngularChatMessagesComponent {
   locale: any;
   @Input()
   public serviceHelper : any;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+    if(changes["chat"]?.currentValue) {
+      this.chat.messages = this.addDelimiterToMessage(this.chat.messages);
+      setTimeout(() => {
+        this.scrollToBottom();
+      }); 
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+  }
 
   public arrayClassNameByMessage: any = 
   {
@@ -64,11 +77,6 @@ export class AngularChatMessagesComponent {
         }
       }
       result.push(listMessage[i]);
-    }
-
-    if(!this.isScroll && listMessage.length > 0) {
-      this.isScroll = true;
-      this.scrollToBottom();
     }
     return result;
   };
