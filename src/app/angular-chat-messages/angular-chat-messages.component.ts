@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, ViewEncapsulation, AfterViewInit } from '@angular/core';
 import { ConvertDateService } from '../services/convert-date.service';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
@@ -11,12 +11,19 @@ import { DTO_Chat } from '../models/DTO_Chat';
   encapsulation: ViewEncapsulation.None
 })
 
-export class AngularChatMessagesComponent {  
-  @ViewChild('chatListContainer') list?: ElementRef<HTMLDivElement>;
-  @Input() chat: DTO_Chat = new DTO_Chat();
-  @Input() locale: any;
-  @Input() public serviceHelper : any;
+export class AngularChatMessagesComponent implements AfterViewInit {
+  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
+
   readonly constants = Constants;
+
+  @ViewChild('chatListContainer') list?: ElementRef<HTMLDivElement>;
+
+  @Input()
+  chat: DTO_Chat = new DTO_Chat();
+  @Input()
+  locale: any;
+  @Input()
+  public serviceHelper : any;
 
   public arrayClassNameByMessage: any = 
   {
@@ -26,13 +33,15 @@ export class AngularChatMessagesComponent {
     'delimiter': 'delimiter'
   }
 
-  constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
-
   public get isHasNoMessage() {
     return this.chat.messages?.length === 0;
   }
 
-  addDateToMessage(listMessage: Array<any>) {
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+  }
+
+  addDelimiterToMessage(listMessage: Array<any>) {
     let result: Array<any> = []; 
 
     if(!listMessage) return result;
@@ -59,7 +68,6 @@ export class AngularChatMessagesComponent {
       }
       result.push(listMessage[i]);
     }
-    this.scrollToBottom();
     return result;
   };
 
@@ -102,6 +110,7 @@ export class AngularChatMessagesComponent {
     return `<div class=${msgClass}>${textMsg} ${this.addDateAndStatusToMessage(message)}</div>`;
     
   }
+
   addDateAndStatusToMessage(message: any) {
     return `
       <div class="${message.send_type == 'delimiter' ?

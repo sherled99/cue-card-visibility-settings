@@ -1,4 +1,4 @@
-.container {
+.conversation-list {
     width: 100%x;
     height: 100%;
     overflow: scroll;
@@ -31,20 +31,12 @@
     height: 30px;
 }
 
-.conversation-list-div {
-    height: calc(100% - 50px);
-    overflow: auto;
-}
-
-.conversation-list {
-    margin: 10px;
-}
-
 .conversation {
     height: 65px;
     display: flex;
     cursor: pointer;
     justify-content: space-between;
+    margin: 10px;
 }
 
 .conversation:hover {

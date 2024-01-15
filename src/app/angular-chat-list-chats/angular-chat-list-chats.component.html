@@ -1,21 +1,19 @@
-<div class="container" (scroll)="onScroll($event)">
-    <div class="conversation-list" *ngFor="let chat of chatList">
-        <div class="conversation" [id]="chat.id" (click)="showChatHandle({chatId: chat.id})">
-            <div [class]="chat.channel.code == 'telegram' ? 'telegram-icon' : 'whatsapp-icon'"></div>
-            <div class="conversation-text">
-                <div class="conversation-title">{{ chat.contact.name }}</div>
-                <div class="info-channel-owner-name">
-                    <div class="conversation-title-double">{{ chat.channel.name }}</div>
-                    <div *ngIf="chat.owner.name !== ''" style="max-width: 60%">
-                        <div class="conversation-title-double" >{{ chat.owner.name }}</div>
-                    </div>
+<div class="conversation-list" (scroll)="onScroll($event)">
+    <div *ngFor="let chat of chatList" [id]="chat.id" class="conversation" [id]="chat.id" (click)="showChatHandle({chatId: chat.id})">
+        <div [class]="chat.channel.code == 'telegram' ? 'telegram-icon' : 'whatsapp-icon'"></div>
+        <div class="conversation-text">
+            <div class="conversation-title">{{ chat.contact?.name }}</div>
+            <div class="info-channel-owner-name">
+                <div class="conversation-title-double">{{ chat.channel?.name }}</div>
+                <div *ngIf="chat.owner.name !== ''" style="max-width: 60%">
+                    <div class="conversation-title-double" >{{ chat.owner?.name }}</div>
                 </div>
             </div>
-            <div class="conversation-image-div">
-                <div class="conversation-date-div">{{convertDate.convertTimestampToLastDate(chat.dateOfLastMessage)}}</div>
-                <div class="unread-count-div">
-                    <span class="unread-count-span" *ngIf="chat.unreadCount > 0 ">{{chat.unreadCount}}</span>
-                </div>
+        </div>
+        <div class="conversation-image-div">
+            <div class="conversation-date-div">{{convertDate.convertTimestampToLastDate(chat.dateOfLastMessage)}}</div>
+            <div class="unread-count-div">
+                <span class="unread-count-span" *ngIf="chat.unreadCount > 0 ">{{chat.unreadCount}}</span>
             </div>
         </div>
     </div>
