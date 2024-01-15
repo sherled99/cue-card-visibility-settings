@@ -1,7 +1,7 @@
 <div class="background-image" id="bacground-screen-chat" #chatListContainer>
     <div class="messages-list" >
         <p id="no-message" class="text" *ngIf="isHasNoMessage">{{translateRecord.getTranslateWord(locale, 'noMessage')}}</p>
-        <div *ngFor="let message of addDateToMessage(chat.messages)">
+        <div *ngFor="let message of addDelimiterToMessage(chat.messages)">
             <div [class]="arrayClassNameByMessage[message.send_type]">    
                 <div *ngIf="message.type == 'media'">
                     <div class="media-message-container">

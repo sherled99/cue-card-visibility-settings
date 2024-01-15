@@ -1,9 +1,9 @@
 export class DTO_ChatList{
-    "channel": Object;
-    "contact": Object;
+    "channel": any;
+    "contact": any;
     "dateOfLastMessage": number;
     "id": string;
     "name": string;
-    "owner": Object;
-    "unreadCount": string;
+    "owner": any;
+    "unreadCount": number;
 }
