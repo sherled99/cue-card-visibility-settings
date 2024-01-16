@@ -3,11 +3,12 @@
         <div [class]="chat.channel.code == 'telegram' ? 'telegram-icon' : 'whatsapp-icon'"></div>
         <div class="conversation-text">
             <div class="conversation-title">{{ chat.contact?.name }}</div>
-            <div class="info-channel-owner-name">
-                <div class="conversation-title-double">{{ chat.channel?.name }}</div>
-                <div *ngIf="chat.owner.name !== ''" style="max-width: 60%">
-                    <div class="conversation-title-double" >{{ chat.owner?.name }}</div>
-                </div>
+            <div class="info-channel">
+                <div *ngIf="chat.channel.name" class="conversation-title-double">{{ chat.channel.name }}</div>
+                <div *ngIf="chat.owner.name" class="conversation-title-double" >{{ chat.owner.name }}</div>
+            </div>
+            <div class="last-message">
+                {{ chat.textOfLastMessage }}
             </div>
         </div>
         <div class="conversation-image-div">
