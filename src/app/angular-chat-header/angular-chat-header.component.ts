@@ -5,12 +5,20 @@ import { Component, Input, Output, EventEmitter} from '@angular/core';
   templateUrl: './angular-chat-header.component.html',
   styleUrls: ['../angular-chat/angular-chat.component.scss'],
 })
-export class AngularChatHeaderComponent{
-  @Input() chat: any;
-  @Input() chatRelatedLinks: any;
-  @Output() backToListChat = new EventEmitter();
-  @Output() cardClick = new EventEmitter<any>(); 
+export class AngularChatHeaderComponent {
   public isShowRelatedLinks = false;
+  
+  @Input()
+  chat: any;
+
+  @Input()
+  chatRelatedLinks: any;
+
+  @Output()
+  backToListChat = new EventEmitter();
+
+  @Output()
+  cardClick = new EventEmitter<any>(); 
 
   backToAllList(event: any){
     this.backToListChat.emit(null);
@@ -21,12 +29,13 @@ export class AngularChatHeaderComponent{
     this.isShowRelatedLinks = false;
   }
 
-  public showRelatedLinks(){
+  public showRelatedLinks() {
     this.isShowRelatedLinks = !this.isShowRelatedLinks;
   }
 
-  public hideRelatedLinksByOutsideClick(event: any){
-    if(this.isShowRelatedLinks && event.target.id !== 'btn-show-related-links') this.isShowRelatedLinks = false;
+  public hideRelatedLinksByOutsideClick(event: any) {
+    if(this.isShowRelatedLinks && event.target.id !== 'btn-show-related-links') {
+      this.isShowRelatedLinks = false;
+    }
   }
-
 }

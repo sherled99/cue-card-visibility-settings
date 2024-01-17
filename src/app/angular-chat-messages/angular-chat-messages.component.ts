@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, ViewEncapsulation, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, ViewEncapsulation, OnChanges, SimpleChanges } from '@angular/core';
 import { ConvertDateService } from '../services/convert-date.service';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
@@ -11,22 +11,22 @@ import { DTO_Chat } from '../models/DTO_Chat';
   encapsulation: ViewEncapsulation.None
 })
 
-export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
+export class AngularChatMessagesComponent implements OnChanges {
   constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
 
-  readonly constants = Constants;
-
-  @ViewChild('chatListContainer') list?: ElementRef<HTMLDivElement>;
+  @ViewChild('chatListContainer')
+  list?: ElementRef<HTMLDivElement>;
 
   @Input()
   chat: DTO_Chat = new DTO_Chat();
+
   @Input()
   locale: any;
+
   @Input()
   public serviceHelper : any;
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if(changes["chat"]?.currentValue) {
       this.chat.messages = this.addDelimiterToMessage(this.chat.messages);
       setTimeout(() => {
@@ -35,11 +35,7 @@ export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    this.scrollToBottom();
-  }
-
-  public arrayClassNameByMessage: any = 
+  arrayClassNameByMessage: any = 
   {
     'inbound': 'message sender',
     'outbound': 'message receiver',
@@ -47,7 +43,7 @@ export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
     'delimiter': 'delimiter'
   }
 
-  public get isHasNoMessage() {
+  get isHasNoMessage() {
     return this.chat.messages?.length === 0;
   }
 
@@ -95,12 +91,9 @@ export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
       console.log('Error parse config message.')
       return result;
     }
-
-
   }
 
   processMessage(message: any) {
-   // if(message.type == 'phonerequest') return `${this.translateRecord.getTranslateWord(this.locale, 'phonerequest')} ${this.addDateAndStatusToMessage(message)}`;
     return `${this.checkHrefInMessage(message.text)} ${this.addDateAndStatusToMessage(message)}`;
   }
 
@@ -118,7 +111,6 @@ export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
       '';
 
     return `<div class=${msgClass}>${textMsg} ${this.addDateAndStatusToMessage(message)}</div>`;
-    
   }
 
   addDateAndStatusToMessage(message: any) {
@@ -129,35 +121,35 @@ export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
         <div class="container-time-status">
             ${this.convertDate.convertTimestamp(message.unixDate, message.isSkipUTC)} ${message.status}   
         </div>
-      </div>
-      `
+      </div>`;
   }
 
   checkHrefInMessage(mess: string) {
     let regExp = new RegExp(/(((http|https):\/\/)|(www.))([0-9a-zA-Zа-яёА-ЯЁ_-]+(?:(?:\.[0-9a-zA-Zа-яёА-ЯЁ_-]+)+))([\w.,@?^={}%&:\/~+#-]*[\w@?^=%&\/~+#}-])/g);
     let result = mess.match(regExp) || [];
-    for(let i = 0; i < result.length; i++){
+
+    for(let i = 0; i < result.length; i++) {
       mess = mess.replace( result[i], `<a href=${result[i]}>${result[i]}</a>`);
     };
+
     return mess.split('\n').join('<br>');                
   }
 
   downloadFile(messageId: any) {
     this.serviceHelper.callService({
-        serviceName: "GoChatService",
-        methodName: "GetMedia",
-        callback: function(result: any) {
-          console.log('messageId ', result);
-          const src = `${result.data}`;
-          const link = document.createElement("a");
-          link.href = src;
-          link.download = result.filename? result.filename : 'file.png';
-          link.click();
-          link.remove();
-          
-        },
-        scope: this,
-        data: messageId
+      serviceName: "GoChatService",
+      methodName: "GetMedia",
+      callback: function(result: any) {
+        console.log('messageId ', result);
+        const src = `${result.data}`;
+        const link = document.createElement("a");
+        link.href = src;
+        link.download = result.filename? result.filename : 'file.png';
+        link.click();
+        link.remove();
+      },
+      scope: this,
+      data: messageId
     }, this);
   }
 
@@ -171,10 +163,10 @@ export class AngularChatMessagesComponent implements OnChanges, AfterViewInit {
       },
       scope: this,
       data: {
-              chatId: this.chat.chat.id,
-              msgIds: [event.target.parentNode.id],
-              newStatusId: this.constants.Message.Status.unanswered
-            }
+        chatId: this.chat.chat.id,
+        msgIds: [event.target.parentNode.id],
+        newStatusId: Constants.Message.Status.unanswered
+      }
     }, this);
   }
 }

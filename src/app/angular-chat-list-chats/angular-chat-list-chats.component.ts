@@ -12,11 +12,13 @@ export class AngularChatListChatsComponent implements AfterViewInit {
 
   @Input()
   selectedChatId: string = "";
+
   @Input()
   chatList: DTO_ChatList[] = [];
 
   @Output()
   showChat = new EventEmitter();
+  
   @Output()
   loadMoreChats = new EventEmitter();
 
@@ -24,7 +26,7 @@ export class AngularChatListChatsComponent implements AfterViewInit {
     const element = document.getElementById(this.selectedChatId) as HTMLElement;
 
     if(element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView();
     }
   }
 
