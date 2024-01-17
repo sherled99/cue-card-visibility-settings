@@ -1,15 +1,14 @@
 <div class="conversation-list" (scroll)="onScroll($event)">
-    <div *ngFor="let chat of chatList" [id]="chat.id" class="conversation" [id]="chat.id" (click)="showChatHandle({chatId: chat.id})">
-        <div [class]="chat.channel.code == 'telegram' ? 'telegram-icon' : 'whatsapp-icon'"></div>
+    <div *ngFor="let chat of chatList" class="conversation" [id]="chat.id" (click)="showChatHandle({chatId: chat.id})">
+        <div *ngIf="chat.channel.code == 'telegram'" class="telegram-icon"></div>
+        <div *ngIf="chat.channel.code == 'whatsapp'" class="whatsapp-icon"></div>
         <div class="conversation-text">
-            <div class="conversation-title">{{ chat.contact?.name }}</div>
+            <div class="conversation-title">{{chat.contact.name}}</div>
             <div class="info-channel">
-                <div *ngIf="chat.channel.name" class="conversation-title-double">{{ chat.channel.name }}</div>
-                <div *ngIf="chat.owner.name" class="conversation-title-double" >{{ chat.owner.name }}</div>
+                <div *ngIf="chat.channel.name" class="conversation-title-double">{{chat.channel.name}}</div>
+                <div *ngIf="chat.owner.name" class="conversation-title-double" >{{chat.owner.name}}</div>
             </div>
-            <div class="last-message">
-                {{ chat.textOfLastMessage }}
-            </div>
+            <div class="last-message">{{chat.textOfLastMessage}}</div>
         </div>
         <div class="conversation-image-div">
             <div class="conversation-date-div">{{convertDate.convertTimestampToLastDate(chat.dateOfLastMessage)}}</div>

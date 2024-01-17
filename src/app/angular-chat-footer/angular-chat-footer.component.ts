@@ -8,51 +8,74 @@ import { Constants } from '../common/constants';
   styleUrls: ['../angular-chat/angular-chat.component.scss']
 })
 export class AngularChatFooterComponent {
-  @Input() chat: any;
-  @Input() locale: any;
-  @Input() public serviceHelper : any;
-  @Input() terrasoft: any;
-  @Input() sandbox: any;
-
-  @Output() editRowspanInput = new EventEmitter<any>();
-  @Output() resetRowspanInput = new EventEmitter<any>();
-  @Output() refresMessages = new EventEmitter<any>();
-
   readonly constants = Constants;
 
-  constructor(public translateRecord: TranslateByLocale){}
+  constructor(public translateRecord: TranslateByLocale) {}
+
+  @Input()
+  chat: any;
+
+  @Input()
+  locale: any;
+
+  @Input()
+  public serviceHelper : any;
+
+  @Input()
+  terrasoft: any;
+
+  @Input()
+  sandbox: any;
+
+  @Output()
+  editRowspanInput = new EventEmitter<any>();
+
+  @Output()
+  resetRowspanInput = new EventEmitter<any>();
+
+  @Output()
+  refresMessages = new EventEmitter<any>();
   
-  public isHasTodayIncometMessage(){
+  public isHasTodayIncometMessage() {
     let currentUserTime = this.getCurrentUserTimeStamp();
     return this.chat?.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
   }
 
-  public isTelegramMessanger(){
-    return this.constants.Messanger.Code.telegram === this.chat?.channel?.code;
+  public isTelegramMessanger() {
+    return Constants.Messanger.Code.telegram === this.chat?.channel?.code;
   }
 
-  public get isHideWelconeMessageBtn(){
+  public get isHideWelconeMessageBtn() {
     return this.isTelegramMessanger() || this.isHasTodayIncometMessage();
   }
 
-  public getCurrentUTCTimeStamp(){
+  public getCurrentUTCTimeStamp() {
     let now = new Date();
-    return Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , 
-    now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+    
+    return Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds(),
+      now.getUTCMilliseconds()
+    );
   }
   
-  public getCurrentUserTimeStamp(){
+  public getCurrentUserTimeStamp() {
     let utcNow = this.getCurrentUTCTimeStamp();
     return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET*60000;
   }
 
   public saveNewOutcomeMessage(message: string, event: any) {
-    if(event !== null && event.key == 'Enter'){
+    if(event !== null && event.key == 'Enter') {
       event.preventDefault();
     }
 
-    if(message.replace(/^\s*[\r\n ]/gm, '') === '') return;
-    
+    if(message.replace(/^\s*[\r\n ]/gm, '') === '') {
+      return;
+    }
     let newMsg = {
         type: 'text',
         unixDate: new Date(),
@@ -64,8 +87,9 @@ export class AngularChatFooterComponent {
     };
     this.chat.messages.push(newMsg);
 
-    let inputValue = (document.getElementById('main-input-message') as HTMLInputElement) !== null
-                      ? (document.getElementById('main-input-message') as HTMLInputElement): {value: ' '};
+    let inputValue = (document.getElementById('main-input-message') as HTMLInputElement) !== null ?
+      (document.getElementById('main-input-message') as HTMLInputElement) :
+      { value: ' ' };
     inputValue.value = ''; 
     this.resetRowspanInput.emit();
 
@@ -73,14 +97,15 @@ export class AngularChatFooterComponent {
       chatId: this.chat.chat.id,
       text: message
     };
+
     if(event && event.isTemplate){
       args['TemplateId'] = event.id
     }
     console.log('new message args !! ', args);
-    const methodName = event && event.isTemplate ? 'CreateTemplate' : 'CreateMessage';
+
     this.serviceHelper.callService({
         serviceName: "GoChatService",
-        methodName: methodName,
+        methodName: event && event.isTemplate ? 'CreateTemplate' : 'CreateMessage',
         callback: function(messageId: any) {
           console.log('messageId ', messageId);
           newMsg.id = messageId;
@@ -91,10 +116,12 @@ export class AngularChatFooterComponent {
 
     this.chat.messages = Object.assign([], this.chat.messages);
 
-    let listIncomeMessage = this.chat.messages?.filter((x: any)=>(x.status === 'seen' || 'new') && x.send_type ==='inbound')
-                                                .map((x: { id: any; })=>x.id);
+    let listIncomeMessage = this.chat.messages?.filter((x: any)=>(x.status === 'seen' || 'new') && x.send_type ==='inbound').map((x: { id: any; })=>x.id);
     console.log('listIncomeMessage', listIncomeMessage);
-    if(listIncomeMessage.length == 0) return;
+
+    if(listIncomeMessage.length == 0) {
+      return;
+    }
     this.serviceHelper.callService({
       serviceName: "GoChatService",
       methodName: "ChangeMessageStatus",
@@ -103,15 +130,14 @@ export class AngularChatFooterComponent {
       },
       scope: this,
       data: {
-              chatId: this.chat.chat.id,
-              msgIds: listIncomeMessage,
-              newStatusId: this.constants.Message.Status.answered
-            }
+        chatId: this.chat.chat.id,
+        msgIds: listIncomeMessage,
+        newStatusId: Constants.Message.Status.answered
+      }
     }, this);
   }
 
-  
-  async uploadFileFromInput(event: any){
+  async uploadFileFromInput(event: any) {
     const file = event.target.files[0];
     const fileName = event.target.files[0].name;
     let imageString = await this.convertBase64(file);
@@ -144,7 +170,6 @@ export class AngularChatFooterComponent {
     }, this);
   }
 
-
   convertBase64 (file: any) {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -154,18 +179,24 @@ export class AngularChatFooterComponent {
     });
   };
 
-
-  public updateIncomeMessagesStatus(changedMessageIds: any, status: string){
-    if(changedMessageIds?.length == 0) return;
+  public updateIncomeMessagesStatus(changedMessageIds: any, status: string) {
+    if(changedMessageIds?.length == 0) {
+      return;
+    }
     this.chat.messages = this.chat.messages.map((x: any) => {
-      if(changedMessageIds.find((msg: any) => msg.id == x.id)) x.status = status;
+      if(changedMessageIds.find((msg: any) => msg.id == x.id)) {
+        x.status = status;
+      }
       return x;
     });
   }
 
-  public saveNewIncomeMessage(message: any){
-    console.log('saveNewIncomeMessage', message)
-    if(this.chat.chat.id !== message.chatId) return;
+  public saveNewIncomeMessage(message: any) {
+    console.log('saveNewIncomeMessage', message);
+
+    if(this.chat.chat.id !== message.chatId) {
+      return;
+    }
     let newMsg = {
       type: message.type,
       unixDate: message.unixDate,
@@ -181,7 +212,7 @@ export class AngularChatFooterComponent {
 
     let existedMessage = this.chat.messages.find((el: any) => el.id === message.id);
 
-    if(existedMessage){
+    if(existedMessage) {
       this.chat.messages[this.chat.messages.indexOf(existedMessage)].text = message.text;
     } else {
       this.chat.messages.push(newMsg);
@@ -189,7 +220,7 @@ export class AngularChatFooterComponent {
     this.chat.messages = Object.assign([], this.chat.messages);
   }
 
-  showTemplateLookup(type: string){
+  showTemplateLookup(type: string) {
     let filters = this.terrasoft.createFilterGroup();
     filters.name = "typeFilter";
     filters.logicalComparisonTypes = this.terrasoft.LogicalOperatorType.AND;
@@ -211,14 +242,14 @@ export class AngularChatFooterComponent {
       "sandbox": this.sandbox,
       "keepAlive": false
     };
-    this.terrasoft.LookupUtilities.open(config, (e:any) =>{
+    this.terrasoft.LookupUtilities.open(config, (e:any) => {
       let selectedRow = e.selectedRows.collection.items[0];
       this.saveNewOutcomeMessage(selectedRow["GoText"], {isTemplate: true, id: selectedRow["Id"]});
       this.refresMessages.emit({});
     }, this);
   }
 
-  onChangeInputSize(event: any){
+  onChangeInputSize(event: any) {
     if(event.target.scrollTop > 0){
       this.editRowspanInput.emit();
     }
@@ -226,6 +257,4 @@ export class AngularChatFooterComponent {
       this.resetRowspanInput.emit();
     }
   }
-
 }
-

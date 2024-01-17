@@ -1,10 +1,10 @@
-export class DTO_ChatList{
+export class DTO_ChatList {
+    "id": string;
+    "name": string;
+    "owner": any;
     "channel": any;
     "contact": any;
     "dateOfLastMessage": number;
     "textOfLastMessage": string;
-    "id": string;
-    "name": string;
-    "owner": any;
     "unreadCount": number;
 }
