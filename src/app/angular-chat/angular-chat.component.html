@@ -1,39 +1,35 @@
-<div class="container" *ngIf="isShowChatList; else isShowChat">
-    <app-angular-chat-list-chats [chatList]="chatList"
+<div class="container">
+    <app-angular-chat-list-chats *ngIf="isShowChatList" [chatList]="chatList"
         [selectedChatId]="_selectedChatId"
         (showChat)="showChat($event)"
         (loadMoreChats)="loadMoreChats()"
     ></app-angular-chat-list-chats>
-    </div>
 
-    <ng-template #isShowChat>
-    <mat-grid-list cols="1" rowHeight="fit">
-        <mat-grid-tile [rowspan]="1">
+    <mat-grid-list *ngIf="!isShowChatList" cols="1" rowHeight="fit" class="test">
+        <mat-grid-tile [rowspan]="rowSpanHeader">
             <app-angular-chat-header [chat]="chat"
                 [chatRelatedLinks]="chatRelatedLinks"
                 (cardClick)="onOpenCard($event)"
                 (backToListChat)="showChatList()"
             ></app-angular-chat-header>
         </mat-grid-tile>
-        <mat-grid-tile [rowspan]="18">
+        <mat-grid-tile [rowspan]="rowSpanMessages">
             <app-angular-chat-messages [chat]="chat"
                 [locale]="locale"
                 [serviceHelper]="serviceHelper"
             ></app-angular-chat-messages>
         </mat-grid-tile>
-        <mat-grid-tile [rowspan]="rowspanInput">    
+        <mat-grid-tile [rowspan]="rowSpanFooter">    
             <app-angular-chat-footer [chat]="chat"
                 [locale]="locale"
                 [sandbox]="sandbox"
                 [terrasoft]="terrasoft"
                 [serviceHelper]="serviceHelper"
-                (editRowspanInput)="onEditRowspanInput()"
-                (resetRowspanInput)="onResetRowspanInput()"
+                (editRowspanInput)="onEditRowSpanFooter()"
+                (deleteRowspanInput)="onDeleteRowSpanFooter()"
+                (resetRowspanInput)="onResetRowSpanFooter()"
                 (refresMessages)="onRefreshMessages($event)"
             ></app-angular-chat-footer>
         </mat-grid-tile>                        
-    </mat-grid-list>
-</ng-template>
-
-
-
+    </mat-grid-list>    
+</div>

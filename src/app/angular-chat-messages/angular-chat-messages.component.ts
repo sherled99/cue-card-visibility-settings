@@ -7,10 +7,9 @@ import { DTO_Chat } from '../models/DTO_Chat';
 @Component({
   selector: 'app-angular-chat-messages',
   templateUrl: './angular-chat-messages.component.html',
-  styleUrls: ['../angular-chat/angular-chat.component.scss'],
+  styleUrls: ['./angular-chat-messages.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-
 export class AngularChatMessagesComponent implements OnChanges {
   constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
 
@@ -110,7 +109,10 @@ export class AngularChatMessagesComponent implements OnChanges {
       'outbound-media' :
       '';
 
-    return `<div class=${msgClass}>${textMsg} ${this.addDateAndStatusToMessage(message)}</div>`;
+    return `
+      <div class="${msgClass}">
+        ${textMsg} ${this.addDateAndStatusToMessage(message)}
+      </div>`;
   }
 
   addDateAndStatusToMessage(message: any) {

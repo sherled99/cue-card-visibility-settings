@@ -3,11 +3,9 @@
 <div *ngIf="isHideWelconeMessageBtn">
     <mat-grid-list cols="20" rowHeight="fit">
         <mat-grid-tile [colspan]="2">
-            <div class="footer-btn">
-                <button class="bar-button" (click)="showTemplateLookup(constants.Template.Type.textTemplate)">
-                    <mat-icon class="bar-icon">textsms</mat-icon>
-                </button>
-            </div> 
+            <button class="footer-btn" (click)="showTemplateLookup(constants.Template.Type.textTemplate)">
+                <mat-icon>textsms</mat-icon>
+            </button>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="14"> 
             <textarea
@@ -21,10 +19,12 @@
             ></textarea>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="4"> 
-            <input type="file" class="bar-button footer-btn" id="inputFile" (change)="uploadFileFromInput($event)" style="display: none;" >
-            <label for="inputFile" class="bar-button footer-btn"> <mat-icon class="bar-icon">attach_file</mat-icon> </label>
-            <button class="bar-button footer-btn" (click)="saveNewOutcomeMessage(input.value, $event)">
-                <mat-icon class="bar-icon">send</mat-icon>
+            <input type="file" class="footer-btn" id="inputFile" (change)="uploadFileFromInput($event)" style="display: none;" >
+            <label for="inputFile" class="footer-btn">
+                <mat-icon>attach_file</mat-icon>
+            </label>
+            <button class="footer-btn" (click)="saveNewOutcomeMessage(input.value, $event)">
+                <mat-icon>send</mat-icon>
             </button>
         </mat-grid-tile>    
     </mat-grid-list>

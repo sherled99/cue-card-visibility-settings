@@ -43,17 +43,23 @@ export class AngularChatComponent {
   public chat: DTO_Chat = new DTO_Chat();
 
   @Input()
-  lastNewIncomeMessageId: any;  
+  lastNewIncomeMessageId: any;
 
   @Input()
-  public rowspanInput = 1;
+  rowSpanHeader: number = 1;
+
+  @Input()
+  rowSpanMessages: number = 18;
+
+  @Input()
+  rowSpanFooter: number = 1;
 
   @Input()
   chatRelatedLinks: any;
 
   @Input()
   public set openChat(chat: any) {
-    console.log('openChat ', chat);
+    console.log('openChat: ', chat);
     this.chat = chat;
     this.isShowChatList = false;
     this.readIncomeMessages();
@@ -136,6 +142,7 @@ export class AngularChatComponent {
     this.isShowChatList = true;
     this.chat = new DTO_Chat;
     this.getChatList();
+    this.onResetRowSpanFooter();
   }
 
   public browserNotification(message: any) {
@@ -157,12 +164,24 @@ export class AngularChatComponent {
     this.openCardClick.emit(eventData);
   }
 
-  onEditRowspanInput() {
-    if(this.rowspanInput < 12) this.rowspanInput += 1;
+  onEditRowSpanFooter() {
+    if(this.rowSpanFooter < 8) {
+      this.rowSpanFooter += 1;
+      this.rowSpanMessages -= 1;
+    }
   }
 
-  onResetRowspanInput() {
-    this.rowspanInput = 1;
+  onDeleteRowSpanFooter() {
+    if(this.rowSpanFooter > 1) {
+      this.rowSpanFooter -= 1;
+      this.rowSpanMessages += 1;
+    }
+  }
+
+  onResetRowSpanFooter() {
+    this.rowSpanHeader = 1;
+    this.rowSpanMessages = 18;
+    this.rowSpanFooter = 1;
   }
 
   onRefreshMessages(event: any) {

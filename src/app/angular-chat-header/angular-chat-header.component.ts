@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter} from '@angular/core';
 @Component({
   selector: 'app-angular-chat-header',
   templateUrl: './angular-chat-header.component.html',
-  styleUrls: ['../angular-chat/angular-chat.component.scss'],
+  styleUrls: ['./angular-chat-header.component.scss'],
 })
 export class AngularChatHeaderComponent {
   public isShowRelatedLinks = false;
