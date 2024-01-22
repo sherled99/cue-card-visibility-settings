@@ -7,20 +7,27 @@
 
     <mat-grid-list *ngIf="!isShowChatList" cols="1" rowHeight="fit" class="test">
         <mat-grid-tile [rowspan]="rowSpanHeader">
-            <app-angular-chat-header [chat]="chat"
+            <app-angular-chat-header
+                [chat]="chat"
                 [chatRelatedLinks]="chatRelatedLinks"
+                [sandbox]="sandbox"
+                [terrasoft]="terrasoft"
+                [serviceHelper]="serviceHelper"
+                [locale]="locale"
                 (cardClick)="onOpenCard($event)"
                 (backToListChat)="showChatList()"
             ></app-angular-chat-header>
         </mat-grid-tile>
         <mat-grid-tile [rowspan]="rowSpanMessages">
-            <app-angular-chat-messages [chat]="chat"
+            <app-angular-chat-messages
+                [chat]="chat"
                 [locale]="locale"
                 [serviceHelper]="serviceHelper"
             ></app-angular-chat-messages>
         </mat-grid-tile>
         <mat-grid-tile [rowspan]="rowSpanFooter">    
-            <app-angular-chat-footer [chat]="chat"
+            <app-angular-chat-footer
+                [chat]="chat"
                 [locale]="locale"
                 [sandbox]="sandbox"
                 [terrasoft]="terrasoft"
@@ -30,6 +37,6 @@
                 (resetRowspanInput)="onResetRowSpanFooter()"
                 (refresMessages)="onRefreshMessages($event)"
             ></app-angular-chat-footer>
-        </mat-grid-tile>                        
+        </mat-grid-tile>           
     </mat-grid-list>    
 </div>
