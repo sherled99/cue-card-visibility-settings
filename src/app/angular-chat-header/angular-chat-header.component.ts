@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter} from '@angular/core';
+import { TranslateByLocale } from '../services/translate-by-locate.service';
 
 @Component({
   selector: 'app-angular-chat-header',
@@ -6,7 +7,21 @@ import { Component, Input, Output, EventEmitter} from '@angular/core';
   styleUrls: ['./angular-chat-header.component.scss'],
 })
 export class AngularChatHeaderComponent {
-  public isShowRelatedLinks = false;
+  constructor(public translateRecord: TranslateByLocale) {}
+  isShowChangeOperator = false;
+  isShowRelatedLinks = false;
+
+  @Input()
+  terrasoft: any;
+
+  @Input()
+  sandbox: any;
+
+  @Input()
+  serviceHelper: any;
+
+  @Input()
+  locale: any;
   
   @Input()
   chat: any;
@@ -20,20 +35,71 @@ export class AngularChatHeaderComponent {
   @Output()
   cardClick = new EventEmitter<any>(); 
 
-  backToAllList(event: any){
+  backToAllList() {
     this.backToListChat.emit(null);
   }
 
-  public onOpenCard(eventData: any) {
+  showChangeOperator() {
+    this.isShowChangeOperator = !this.isShowChangeOperator;
+  }
+  
+  onChangeOperatorClick() {
+    const lookupConfig = {
+      entitySchemaName: "Contact",
+      multiSelect: false,
+      columns: ["Id", "Name"],
+      actionsButtonVisible: false,
+      filters: this.getOwnerFilterWithActive()
+    };
+    const config = {
+      "lookupConfig": lookupConfig,
+      "sandbox": this.sandbox,
+      "keepAlive": false
+    };
+    this.terrasoft.LookupUtilities.open(config, (e:any) => {
+      let contact = e.selectedRows.collection.items[0];
+      this.serviceHelper.callService({
+        serviceName: "GoChatService",
+        methodName: "ChangeChatOwner",
+        data: {
+          chatId: this.chat.chat.id,
+          contactId: contact.Id
+        },
+        callback: this.onOperatorChanged.bind(this, contact),
+        scope: this
+			});
+    }, this);
+  }
+
+  onOperatorChanged(contact: any, result: any) {
+    if (result && result.success) {
+      this.backToAllList();
+      console.log(contact);
+      console.log(result);
+      this.terrasoft.utils.showInformation(this.translateRecord.getTranslateWord(this.locale, 'changeoperatorsuccess'));
+    } else {
+      console.log(result);
+      this.terrasoft.utils.showInformation(result?.error);
+    }
+  }
+
+  getOwnerFilterWithActive() {
+    let filters = this.terrasoft.createFilterGroup();
+    filters.addItem(this.terrasoft.createColumnFilterWithParameter(this.terrasoft.ComparisonType.EQUAL, "[SysAdminUnit:Contact].Active", true));
+
+    return filters;
+  }
+
+  onOpenCard(eventData: any) {
     this.cardClick.emit(eventData);
     this.isShowRelatedLinks = false;
   }
 
-  public showRelatedLinks() {
+  showRelatedLinks() {
     this.isShowRelatedLinks = !this.isShowRelatedLinks;
   }
 
-  public hideRelatedLinksByOutsideClick(event: any) {
+  hideRelatedLinksByOutsideClick(event: any) {
     if(this.isShowRelatedLinks && event.target.id !== 'btn-show-related-links') {
       this.isShowRelatedLinks = false;
     }

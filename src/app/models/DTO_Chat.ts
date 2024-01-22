@@ -1,5 +1,6 @@
 export class DTO_Chat {
-    "chat":any;
+    "chat": any;
+    "channel": any;
     "contact": any;
     "relatedObject": any;
     "access": string;

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
-import {TranslateByLocale} from '../services/translate-by-locate.service';
+import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
+import { DTO_Chat } from '../models/DTO_Chat';
 
 @Component({
   selector: 'app-angular-chat-footer',
@@ -13,7 +14,7 @@ export class AngularChatFooterComponent {
   constructor(public translateRecord: TranslateByLocale) {}
 
   @Input()
-  chat: any;
+  chat: DTO_Chat = new DTO_Chat();
 
   @Input()
   locale: any;
