@@ -1,4 +1,4 @@
-<div class="background-image" id="bacground-screen-chat" #chatListContainer>
+<div id="background-screen-chat" #chatListContainer>
     <div class="messages-list" >
         <p id="no-message" class="text" *ngIf="isHasNoMessage">{{translateRecord.getTranslateWord(locale, 'noMessage')}}</p>
         <div *ngFor="let message of chat.messages">

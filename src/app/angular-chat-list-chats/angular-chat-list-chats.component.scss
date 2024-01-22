@@ -1,34 +1,11 @@
+::-webkit-scrollbar {
+    display: none;
+}
+
 .conversation-list {
-    width: 100%x;
+    width: 100%;
     height: 100%;
     overflow: scroll;
-}
-
-.search-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.menu-button {
-    appearance: none;
-    cursor: pointer;
-    border: none;
-    background: none;
-    margin: 10px;
-}
-
-.menu-icon {
-    color: gray;
-}
-
-.menu-input {
-    border: none;
-    width: 100%;
-    background-color: #ececec;
-    border-radius: 3px;
-    margin-right: 10px;
-    height: 30px;
 }
 
 .conversation {
@@ -52,7 +29,7 @@
     font-size: small;
 }
 
-.conversation-date-div{
+.conversation-date-div {
     min-height: 18px;
     padding-top: 3px;
 }
@@ -98,15 +75,6 @@
     font-size: 12px;
     line-height: 21px;
     white-space: nowrap;
-}
-
-.conversation-preview {
-    color: gray;
-    margin-top: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 300px;
 }
 
 .unread-count-div{

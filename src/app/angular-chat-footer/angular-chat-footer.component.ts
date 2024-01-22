@@ -5,7 +5,7 @@ import { Constants } from '../common/constants';
 @Component({
   selector: 'app-angular-chat-footer',
   templateUrl: './angular-chat-footer.component.html',
-  styleUrls: ['../angular-chat/angular-chat.component.scss']
+  styleUrls: ['./angular-chat-footer.component.scss']
 })
 export class AngularChatFooterComponent {
   readonly constants = Constants;
@@ -29,6 +29,9 @@ export class AngularChatFooterComponent {
 
   @Output()
   editRowspanInput = new EventEmitter<any>();
+
+  @Output()
+  deleteRowspanInput = new EventEmitter<any>();
 
   @Output()
   resetRowspanInput = new EventEmitter<any>();
@@ -252,9 +255,20 @@ export class AngularChatFooterComponent {
   onChangeInputSize(event: any) {
     if(event.target.scrollTop > 0){
       this.editRowspanInput.emit();
+
+      return;
     }
+
+    // if(event.target.scrollTop < 10){
+    //   this.deleteRowspanInput.emit();
+
+    //   return;
+    // }
+
     if(event.target.value == ''){
       this.resetRowspanInput.emit();
+
+      return;
     }
   }
 }
