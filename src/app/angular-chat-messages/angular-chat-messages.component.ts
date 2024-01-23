@@ -27,7 +27,8 @@ export class AngularChatMessagesComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["chat"]?.currentValue) {
-      this.chat.messages = this.addDelimiterToMessage(this.chat.messages);
+      this.deleteMessageDelimiters();
+      this.addMessageDelimiters();
       setTimeout(() => {
         this.scrollToBottom();
       }); 
@@ -46,34 +47,46 @@ export class AngularChatMessagesComponent implements OnChanges {
     return this.chat.messages?.length === 0;
   }
 
-  addDelimiterToMessage(listMessage: Array<any>) {
-    let result: Array<any> = []; 
+  deleteMessageDelimiters() {
+    this.chat.messages = this.chat.messages.filter((message) => message.send_type !== 'delimiter');
+  }
 
-    if(!listMessage) return result;
+  addMessageDelimiters() {
+    let resultMessages: Array<any> = []; 
 
-    let today = new Date().setHours(0,0,0,0);
+    if(!this.chat.messages) {
+      this.chat.messages = resultMessages;
+      return;
+    }
+
+    const today = new Date().setHours(0,0,0,0);
     let prevDate = 0;
-    let months = this.translateRecord.getTranslateWord(this.locale, 'month');
+    const months = this.translateRecord.getTranslateWord(this.locale, 'month');
+    const toDayStr = this.translateRecord.getTranslateWord(this.locale, 'toDay');
     
-    for(let i = 0; i < listMessage.length; i++) {
-      let messageDate = new Date(listMessage[i].unixDate).setHours(0,0,0,0);
+    this.chat.messages.forEach((listMessage) => {
+      let messageDate = new Date(listMessage.unixDate).setHours(0,0,0,0);
 
-      if(!listMessage[i].isSkipUTC) {
-        messageDate = new Date(new Date(listMessage[i].unixDate).getUTCFullYear(), new Date(listMessage[i].unixDate).getUTCMonth(), new Date(listMessage[i].unixDate).getUTCDate()).setHours(0,0,0,0);
+      if(!listMessage.isSkipUTC) {
+        messageDate = new Date(
+          new Date(listMessage.unixDate).getUTCFullYear(),
+          new Date(listMessage.unixDate).getUTCMonth(),
+          new Date(listMessage.unixDate).getUTCDate()
+        ).setHours(0,0,0,0);
       }
       
       if(messageDate != prevDate) {
         prevDate = messageDate;
-
-        if(messageDate == today) {
-          result.push({text: `${this.translateRecord.getTranslateWord(this.locale, 'toDay')}`, send_type: 'delimiter'});
-        } else {
-          result.push({text: `${new Date(messageDate).getDate()} ${months[new Date(messageDate).getMonth()]}`, send_type: 'delimiter'});
-        }
+        let deilimeterStr = `${new Date(messageDate).getDate()} ${months[new Date(messageDate).getMonth()]}`;
+        resultMessages.push({
+          text: messageDate == today ? toDayStr : deilimeterStr,
+          send_type: 'delimiter'
+        });
       }
-      result.push(listMessage[i]);
-    }
-    return result;
+      resultMessages.push(listMessage);
+    });
+
+    this.chat.messages = resultMessages;
   };
 
   scrollToBottom() {
@@ -82,12 +95,16 @@ export class AngularChatMessagesComponent implements OnChanges {
   }
 
   parseMsgConfigToBtns(messageConfig: any) {
-    if(!messageConfig) return [];
+    if(!messageConfig) {
+      return [];
+    }
     let result: any = [];
+
     try{
       return JSON.parse(messageConfig.replace(/;/g, ',')).buttons.length > 0 ? JSON.parse(messageConfig.replace(/;/g, ',')).buttons : result;
     } catch {
-      console.log('Error parse config message.')
+      console.log('Error parse config message.', messageConfig);
+
       return result;
     }
   }
@@ -160,8 +177,7 @@ export class AngularChatMessagesComponent implements OnChanges {
       serviceName: "GoChatService",
       methodName: "ChangeMessageStatus",
       callback: function(messageIds: any) {
-        console.log('cтатус изменен')
-        //this.updateIncomeMessagesStatus(messageIds, 'unanswered');
+        console.log('cтатус изменен');
       },
       scope: this,
       data: {
