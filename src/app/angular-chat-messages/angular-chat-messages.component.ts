@@ -11,6 +11,14 @@ import { DTO_Chat } from '../models/DTO_Chat';
   encapsulation: ViewEncapsulation.None
 })
 export class AngularChatMessagesComponent implements OnChanges {
+  arrayClassNameByMessage: any = 
+  {
+    'inbound': 'message sender',
+    'outbound': 'message receiver',
+    'media': 'media-message',
+    'delimiter': 'delimiter'
+  }
+
   constructor(public convertDate: ConvertDateService, public translateRecord: TranslateByLocale) {}
 
   @ViewChild('chatListContainer')
@@ -23,28 +31,17 @@ export class AngularChatMessagesComponent implements OnChanges {
   locale: any;
 
   @Input()
-  public serviceHelper : any;
+  serviceHelper : any;
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["chat"]?.currentValue) {
       this.deleteMessageDelimiters();
       this.addMessageDelimiters();
+
       setTimeout(() => {
         this.scrollToBottom();
       }); 
     }
-  }
-
-  arrayClassNameByMessage: any = 
-  {
-    'inbound': 'message sender',
-    'outbound': 'message receiver',
-    'media': 'media-message',
-    'delimiter': 'delimiter'
-  }
-
-  get isHasNoMessage() {
-    return this.chat.messages?.length === 0;
   }
 
   deleteMessageDelimiters() {
@@ -59,8 +56,9 @@ export class AngularChatMessagesComponent implements OnChanges {
       return;
     }
 
-    const today = new Date().setHours(0,0,0,0);
     let prevDate = 0;
+
+    const today = new Date().setHours(0,0,0,0);
     const months = this.translateRecord.getTranslateWord(this.locale, 'month');
     const toDayStr = this.translateRecord.getTranslateWord(this.locale, 'toDay');
     
@@ -155,7 +153,7 @@ export class AngularChatMessagesComponent implements OnChanges {
   }
 
   downloadFile(messageId: any) {
-    this.serviceHelper.callService({
+    const config = {
       serviceName: "GoChatService",
       methodName: "GetMedia",
       callback: function(result: any) {
@@ -163,21 +161,22 @@ export class AngularChatMessagesComponent implements OnChanges {
         const src = `${result.data}`;
         const link = document.createElement("a");
         link.href = src;
-        link.download = result.filename? result.filename : 'file.png';
+        link.download = result.filename ?? 'file.png';
         link.click();
         link.remove();
       },
       scope: this,
       data: messageId
-    }, this);
+    };
+    this.serviceHelper.callService(config);
   }
 
   changeMsgStatusToAnswered(event: any) {
-    this.serviceHelper.callService({
+    const config = {
       serviceName: "GoChatService",
       methodName: "ChangeMessageStatus",
       callback: function(messageIds: any) {
-        console.log('cтатус изменен');
+        console.log('ChangeMessageStatus response', messageIds);
       },
       scope: this,
       data: {
@@ -185,6 +184,7 @@ export class AngularChatMessagesComponent implements OnChanges {
         msgIds: [event.target.parentNode.id],
         newStatusId: Constants.Message.Status.unanswered
       }
-    }, this);
+    };
+    this.serviceHelper.callService(config);
   }
 }
