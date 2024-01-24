@@ -1,12 +1,13 @@
-import { Component, Input, Output, EventEmitter} from '@angular/core';
+import { Component, Input, Output, EventEmitter, AfterViewInit, OnDestroy} from '@angular/core';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
+
 
 @Component({
   selector: 'app-angular-chat-header',
   templateUrl: './angular-chat-header.component.html',
   styleUrls: ['./angular-chat-header.component.scss'],
 })
-export class AngularChatHeaderComponent {
+export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
   constructor(public translateRecord: TranslateByLocale) {}
   isShowChangeOperator = false;
   isShowRelatedLinks = false;
@@ -33,7 +34,19 @@ export class AngularChatHeaderComponent {
   backToListChat = new EventEmitter();
 
   @Output()
-  cardClick = new EventEmitter<any>(); 
+  cardClick = new EventEmitter<any>();
+
+  ngAfterViewInit(): void {
+    window.onbeforeunload = this.onBeforeUnload;
+  }
+
+  ngOnDestroy(): void {
+    console.log('destroy');
+  }
+
+  onBeforeUnload(e: any) {
+    var e = e || window.event;
+  }
 
   backToAllList() {
     this.backToListChat.emit(null);
