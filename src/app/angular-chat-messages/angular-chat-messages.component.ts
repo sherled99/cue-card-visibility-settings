@@ -88,8 +88,9 @@ export class AngularChatMessagesComponent implements OnChanges {
   };
 
   scrollToBottom() {
-    const maxScroll = this.list?.nativeElement.scrollHeight;
-    this.list?.nativeElement.scrollTo({top: maxScroll, behavior: 'auto'});
+    if(this.list && this.list.nativeElement) {
+      this.list.nativeElement.scrollTop = this.list.nativeElement.scrollHeight;
+    }
   }
 
   parseMsgConfigToBtns(messageConfig: any) {

@@ -186,7 +186,8 @@ export class AngularChatComponent {
   }
 
   onRefreshMessages(event: any) {
-    this.cd.detectChanges();
+    this.zone.run(() => this.chat = Object.assign({}, this.chat));
+    this.zone.run(() => this.chat = Object.assign({}, this.chat));
   }
 
   getChatList() {

@@ -63,7 +63,7 @@ export class AngularChatFooterComponent {
       send_type: 'inbound',
       status: 'new',
       id: message.id,
-      isSkipUTC: true,
+      isSkipUTC: false,
       config: message.config,
       answerId: message.answerId
     };
@@ -94,7 +94,7 @@ export class AngularChatFooterComponent {
         send_type: 'outbound',
         status: 'new',
         id: '',
-        isSkipUTC: true
+        isSkipUTC: false
     };
     this.chat.messages.push(newMsg);
 
