@@ -1,4 +1,4 @@
-import { Component, ViewChild, NgZone, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, NgZone, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { AngularChatFooterComponent } from '../angular-chat-footer/angular-chat-footer.component';
 import { DTO_ChatList } from '../models/DTO_ChatList';
 import { DTO_Chat } from '../models/DTO_Chat';
@@ -9,11 +9,12 @@ import { DTO_Chat } from '../models/DTO_Chat';
   styleUrls: ['./angular-chat.component.scss']
 })
 export class AngularChatComponent {
-  constructor(public zone: NgZone) {}
+  constructor(public zone: NgZone, private cd: ChangeDetectorRef) {}
 
   _selectedChatId: string = "";
 
-  @ViewChild(AngularChatFooterComponent) ChatFooter !:any ;
+  @ViewChild(AngularChatFooterComponent)
+  ChatFooter!: any ;
 
   @Input()
   public isShowChatList = true;
@@ -185,7 +186,7 @@ export class AngularChatComponent {
   }
 
   onRefreshMessages(event: any) {
-    this.zone.run(() => this.chat = Object.assign({}, this.chat));
+    this.cd.detectChanges();
   }
 
   getChatList() {

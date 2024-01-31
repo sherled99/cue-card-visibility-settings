@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import { Component, EventEmitter, Input, Output} from '@angular/core';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
 import { DTO_Chat } from '../models/DTO_Chat';
@@ -20,7 +20,7 @@ export class AngularChatFooterComponent {
   locale: any;
 
   @Input()
-  public serviceHelper : any;
+  serviceHelper : any;
 
   @Input()
   terrasoft: any;
@@ -32,47 +32,54 @@ export class AngularChatFooterComponent {
   editRowspanInput = new EventEmitter<any>();
 
   @Output()
-  deleteRowspanInput = new EventEmitter<any>();
-
-  @Output()
   resetRowspanInput = new EventEmitter<any>();
 
   @Output()
   refresMessages = new EventEmitter<any>();
-  
-  public isHasTodayIncometMessage() {
-    let currentUserTime = this.getCurrentUserTimeStamp();
-    return this.chat?.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
+
+  updateIncomeMessagesStatus(changedMessageIds: any, status: string) {
+    if(changedMessageIds?.length == 0) {
+      return;
+    }
+    this.chat.messages = this.chat.messages.map((x: any) => {
+      if(changedMessageIds.find((msg: any) => msg.id == x.id)) {
+        x.status = status;
+      }
+      return x;
+    });
+    this.refresMessages.emit({});
   }
 
-  public isTelegramMessanger() {
-    return Constants.Messanger.Code.telegram === this.chat?.channel?.code;
+  saveNewIncomeMessage(message: any) {
+    console.log('saveNewIncomeMessage', message);
+
+    if(this.chat.chat.id !== message.chatId) {
+      return;
+    }
+    let newMsg = {
+      type: message.type,
+      unixDate: message.unixDate,
+      text: message.text,
+      send_type: 'inbound',
+      status: 'new',
+      id: message.id,
+      isSkipUTC: true,
+      config: message.config,
+      answerId: message.answerId
+    };
+    console.log('saveNewIncomeMessage', newMsg)
+
+    let existedMessage = this.chat.messages.find((el: any) => el.id === message.id);
+
+    if(existedMessage) {
+      this.chat.messages[this.chat.messages.indexOf(existedMessage)].text = message.text;
+    } else {
+      this.chat.messages.push(newMsg);
+    }
+    this.refresMessages.emit({});
   }
 
-  public get isHideWelconeMessageBtn() {
-    return this.isTelegramMessanger() || this.isHasTodayIncometMessage();
-  }
-
-  public getCurrentUTCTimeStamp() {
-    let now = new Date();
-    
-    return Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      now.getUTCHours(),
-      now.getUTCMinutes(),
-      now.getUTCSeconds(),
-      now.getUTCMilliseconds()
-    );
-  }
-  
-  public getCurrentUserTimeStamp() {
-    let utcNow = this.getCurrentUTCTimeStamp();
-    return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET*60000;
-  }
-
-  public saveNewOutcomeMessage(message: string, event: any) {
+  saveNewOutcomeMessage(message: string, event: any) {
     if(event !== null && event.key == 'Enter') {
       event.preventDefault();
     }
@@ -105,20 +112,20 @@ export class AngularChatFooterComponent {
     if(event && event.isTemplate){
       args['TemplateId'] = event.id
     }
-    console.log('new message args !! ', args);
+    console.log('new message args', args);
 
-    this.serviceHelper.callService({
-        serviceName: "GoChatService",
-        methodName: event && event.isTemplate ? 'CreateTemplate' : 'CreateMessage',
-        callback: function(messageId: any) {
-          console.log('messageId ', messageId);
-          newMsg.id = messageId;
-        },
-        scope: this,
-        data: args
-    }, this);
-
-    this.chat.messages = Object.assign([], this.chat.messages);
+    const createConfig = {
+      serviceName: "GoChatService",
+      methodName: event && event.isTemplate ? 'CreateTemplate' : 'CreateMessage',
+      callback: (messageId: any) => {
+        console.log('messageId ', messageId);
+        newMsg.id = messageId;
+        this.refresMessages.emit({});
+      },
+      scope: this,
+      data: args
+    };
+    this.serviceHelper.callService(createConfig);
 
     let listIncomeMessage = this.chat.messages?.filter((x: any)=>(x.status === 'seen' || 'new') && x.send_type ==='inbound').map((x: { id: any; })=>x.id);
     console.log('listIncomeMessage', listIncomeMessage);
@@ -126,10 +133,10 @@ export class AngularChatFooterComponent {
     if(listIncomeMessage.length == 0) {
       return;
     }
-    this.serviceHelper.callService({
+    const changeMessageStatusConfig = {
       serviceName: "GoChatService",
       methodName: "ChangeMessageStatus",
-      callback: function(messageIds: any) {
+      callback: (messageIds: any) => {
         this.updateIncomeMessagesStatus(messageIds, 'answered');
       },
       scope: this,
@@ -138,90 +145,8 @@ export class AngularChatFooterComponent {
         msgIds: listIncomeMessage,
         newStatusId: Constants.Message.Status.answered
       }
-    }, this);
-  }
-
-  async uploadFileFromInput(event: any) {
-    const file = event.target.files[0];
-    const fileName = event.target.files[0].name;
-    let imageString = await this.convertBase64(file);
-    let args:Record<string, any>  = {
-      chatId: this.chat.chat.id,
-      filename: fileName,
-      data: imageString
     };
-
-    this.serviceHelper.callService({
-      serviceName: "GoChatService",
-      methodName: "UploadMedia",
-      callback: function(result: any) {
-        let newMsg = {
-          type: 'media',
-          unixDate: new Date(),
-          text: fileName,
-          send_type: 'outbound',
-          status: 'new',
-          id: result.media_id,
-          isSkipUTC: true,
-          chatId: this.chat.chat.id
-        };
-        console.log('newMsg ', newMsg);
-
-        this.chat.messages.push(newMsg);
-      },
-      scope: this,
-      data: args
-    }, this);
-  }
-
-  convertBase64 (file: any) {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => resolve(fileReader.result);
-      fileReader.onerror = (error) => reject(error);
-    });
-  };
-
-  public updateIncomeMessagesStatus(changedMessageIds: any, status: string) {
-    if(changedMessageIds?.length == 0) {
-      return;
-    }
-    this.chat.messages = this.chat.messages.map((x: any) => {
-      if(changedMessageIds.find((msg: any) => msg.id == x.id)) {
-        x.status = status;
-      }
-      return x;
-    });
-  }
-
-  public saveNewIncomeMessage(message: any) {
-    console.log('saveNewIncomeMessage', message);
-
-    if(this.chat.chat.id !== message.chatId) {
-      return;
-    }
-    let newMsg = {
-      type: message.type,
-      unixDate: message.unixDate,
-      text: message.text,
-      send_type: 'inbound',
-      status: 'new',
-      id: message.id,
-      isSkipUTC: true,
-      config: message.config,
-      answerId: message.answerId
-    };
-    console.log('saveNewIncomeMessage!!!!!!!', newMsg)
-
-    let existedMessage = this.chat.messages.find((el: any) => el.id === message.id);
-
-    if(existedMessage) {
-      this.chat.messages[this.chat.messages.indexOf(existedMessage)].text = message.text;
-    } else {
-      this.chat.messages.push(newMsg);
-    } 
-    this.chat.messages = Object.assign([], this.chat.messages);
+    this.serviceHelper.callService(changeMessageStatusConfig);
   }
 
   showTemplateLookup(type: string) {
@@ -253,6 +178,82 @@ export class AngularChatFooterComponent {
     }, this);
   }
 
+  get isHideWelconeMessageBtn() {
+    return this.isTelegramMessanger() || this.isHasTodayIncometMessage();
+  }
+  
+  isHasTodayIncometMessage() {
+    let currentUserTime = this.getCurrentUserTimeStamp();
+
+    return this.chat?.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
+  }
+
+  isTelegramMessanger() {
+    return Constants.Messanger.Code.telegram === this.chat?.channel?.code;
+  }
+
+  getCurrentUTCTimeStamp() {
+    let now = new Date();
+    
+    return Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds(),
+      now.getUTCMilliseconds()
+    );
+  }
+  
+  getCurrentUserTimeStamp() {
+    let utcNow = this.getCurrentUTCTimeStamp();
+    return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET*60000;
+  }
+
+  async uploadFileFromInput(event: any) {
+    const file = event.target.files[0];
+    const fileName = event.target.files[0].name;
+    let imageString = await this.convertBase64(file);
+    let args:Record<string, any>  = {
+      chatId: this.chat.chat.id,
+      filename: fileName,
+      data: imageString
+    };
+
+    const config = {
+      serviceName: "GoChatService",
+      methodName: "UploadMedia",
+      callback: (result: any) => {
+        let newMsg = {
+          type: 'media',
+          unixDate: new Date(),
+          text: fileName,
+          send_type: 'outbound',
+          status: 'new',
+          id: result.media_id,
+          isSkipUTC: true,
+          chatId: this.chat.chat.id
+        };
+        console.log('newMsg ', newMsg);
+
+        this.chat.messages.push(newMsg);
+      },
+      scope: this,
+      data: args
+    };
+    this.serviceHelper.callService(config);
+  }
+
+  convertBase64 (file: any) {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => resolve(fileReader.result);
+      fileReader.onerror = (error) => reject(error);
+    });
+  };
+
   onChangeInputSize(event: any) {
     if(event.target.scrollTop > 0){
       this.editRowspanInput.emit();
@@ -260,13 +261,7 @@ export class AngularChatFooterComponent {
       return;
     }
 
-    // if(event.target.scrollTop < 10){
-    //   this.deleteRowspanInput.emit();
-
-    //   return;
-    // }
-
-    if(event.target.value == ''){
+    if(!event.target.value){
       this.resetRowspanInput.emit();
 
       return;
