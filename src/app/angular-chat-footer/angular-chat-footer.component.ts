@@ -127,10 +127,13 @@ export class AngularChatFooterComponent {
     };
     this.serviceHelper.callService(createConfig);
 
-    let listIncomeMessage = this.chat.messages?.filter((x: any)=>(x.status === 'seen' || 'new') && x.send_type ==='inbound').map((x: { id: any; })=>x.id);
+    let listIncomeMessage = this.chat.messages
+      .filter((x: any) =>
+        (x.status === 'seen' || x.status === 'new') && x.send_type ==='inbound')
+      .map((x: { id: any; }) => x.id);
     console.log('listIncomeMessage', listIncomeMessage);
 
-    if(listIncomeMessage.length == 0) {
+    if(!listIncomeMessage || listIncomeMessage.length === 0) {
       return;
     }
     const changeMessageStatusConfig = {
