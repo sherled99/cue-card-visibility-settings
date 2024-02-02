@@ -45,17 +45,22 @@ export class AngularChatMessagesComponent implements OnChanges {
   }
 
   deleteMessageDelimiters() {
+    if(!this.chat.messages) {
+      this.chat.messages = [];
+
+      return;
+    }
     this.chat.messages = this.chat.messages.filter((message) => message.send_type !== 'delimiter');
   }
 
   addMessageDelimiters() {
-    let resultMessages: Array<any> = []; 
-
     if(!this.chat.messages) {
-      this.chat.messages = resultMessages;
+      this.chat.messages = [];
+      
       return;
     }
 
+    let resultMessages: Array<any> = [];
     let prevDate = 0;
 
     const today = new Date().setHours(0,0,0,0);
