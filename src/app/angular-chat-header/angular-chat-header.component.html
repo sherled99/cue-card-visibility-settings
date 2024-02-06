@@ -1,6 +1,7 @@
-<mat-grid-list cols="7" rowHeight="fit">
+<mat-grid-list cols="6" rowHeight="fit">
     <mat-grid-tile [rowspan]="2" [colspan]="1">
         <button class="bar-button" (click)="backToAllList()">
+            <mat-icon>keyboard_backspace</mat-icon>
             <i class="arrow left"></i>
         </button>
     </mat-grid-tile>    
@@ -10,28 +11,17 @@
         </div>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="2" [colspan]="1">
-        <button class="bar-button change-operator-button"  (click)="showChangeOperator()">
-
+        <button [matMenuTriggerFor]="moreVert" class="bar-button">
+            <mat-icon id="btn-show-related-links">more_vert</mat-icon>
         </button>
-        <div class="dropdown-content" *ngIf="isShowChangeOperator">
-            <div (clickOutside)="hideRelatedLinksByOutsideClick($event)">
-                <div>
-                    <p (click)="onChangeOperatorClick()">{{translateRecord.getTranslateWord(locale, 'changeoperatorbuttoncaption')}}</p>
-                </div>
+        <mat-menu #moreVert="matMenu">
+            <div class="change-operator-button-menu-item-container">
+                <p class="owner-text" [matTooltip]="chat.chat.ownerName">{{chat.chat.ownerName}}</p>
+                <button class="change-operator-button-menu-item" mat-menu-item (click)="onChangeOperatorClick()">{{translateRecord.getTranslateWord(locale, 'changeoperatorbuttoncaption')}}</button>
             </div>
-        </div>
-    </mat-grid-tile>
-    <mat-grid-tile [rowspan]="2" [colspan]="1">
-        <button class="bar-button" (click)="showRelatedLinks()">
-            <mat-icon style="font-size: 30px;" id="btn-show-related-links">more_vert</mat-icon>
-        </button>
-        <div class="dropdown-content" *ngIf="isShowRelatedLinks">
-            <div (clickOutside)="hideRelatedLinksByOutsideClick($event)">
-                <div *ngFor="let item of chatRelatedLinks">
-                    <p *ngIf="item.displayName !== ''" (click)="onOpenCard({id: item.name, schemaName: item.schemaName})">{{item.displayName}}</p>
-                </div>
-            </div>
-        </div>
+            <mat-divider *ngIf="chatRelatedLinks.length"></mat-divider>
+            <button *ngFor="let item of chatRelatedLinks" mat-menu-item (click)="onOpenCard({id: item.name, schemaName: item.schemaName})">{{item.displayName}}</button>
+        </mat-menu>
     </mat-grid-tile>
     <mat-grid-tile [rowspan]="1" [colspan]="4">
         <div class="name" (click)="onOpenCard({id: chat.chat.id, schemaName: 'GoMsgChat'})">

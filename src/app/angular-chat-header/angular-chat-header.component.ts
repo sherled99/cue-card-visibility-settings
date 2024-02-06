@@ -9,8 +9,6 @@ import { TranslateByLocale } from '../services/translate-by-locate.service';
 })
 export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
   constructor(public translateRecord: TranslateByLocale) {}
-  isShowChangeOperator = false;
-  isShowRelatedLinks = false;
 
   @Input()
   terrasoft: any;
@@ -50,10 +48,6 @@ export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
 
   backToAllList() {
     this.backToListChat.emit(null);
-  }
-
-  showChangeOperator() {
-    this.isShowChangeOperator = !this.isShowChangeOperator;
   }
   
   onChangeOperatorClick() {
@@ -105,16 +99,5 @@ export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
 
   onOpenCard(eventData: any) {
     this.cardClick.emit(eventData);
-    this.isShowRelatedLinks = false;
-  }
-
-  showRelatedLinks() {
-    this.isShowRelatedLinks = !this.isShowRelatedLinks;
-  }
-
-  hideRelatedLinksByOutsideClick(event: any) {
-    if(this.isShowRelatedLinks && event.target.id !== 'btn-show-related-links') {
-      this.isShowRelatedLinks = false;
-    }
   }
 }

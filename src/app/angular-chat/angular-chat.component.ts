@@ -94,8 +94,11 @@ export class AngularChatComponent {
   }
 
   @Input()
-  public set relatedLinksChat(links: any) {
-    this.chatRelatedLinks = links;
+  public set relatedLinksChat(links: Array<any>) {
+    if(!links) {
+      this.chatRelatedLinks = [];
+    }
+    this.chatRelatedLinks = links.filter((item) => item.displayName);
     console.log('this.chatRelatedLinks', this.chatRelatedLinks)
   }
 
