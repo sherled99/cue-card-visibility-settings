@@ -19,7 +19,7 @@
                 <p class="owner-text" [matTooltip]="chat.chat.ownerName">{{chat.chat.ownerName}}</p>
                 <button class="change-operator-button-menu-item" mat-menu-item (click)="onChangeOperatorClick()">{{translateRecord.getTranslateWord(locale, 'changeoperatorbuttoncaption')}}</button>
             </div>
-            <mat-divider *ngIf="chatRelatedLinks.length"></mat-divider>
+            <mat-divider *ngIf="chatRelatedLinks && chatRelatedLinks.length"></mat-divider>
             <button *ngFor="let item of chatRelatedLinks" mat-menu-item (click)="onOpenCard({id: item.name, schemaName: item.schemaName})">{{item.displayName}}</button>
         </mat-menu>
     </mat-grid-tile>
