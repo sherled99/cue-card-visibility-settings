@@ -70,8 +70,8 @@ export class TranslateByLocale {
                 'en-US': 'Provide a phone number.'
             },
             'changeoperatorbuttoncaption':{
-                'ru-RU': 'Сменить оператора',
-                'en-US': 'Change operator'
+                'ru-RU': 'Сменить',
+                'en-US': 'Change'
             },
             'changeoperatorsuccess':{
                 'ru-RU': 'Оператор успешно изменен',

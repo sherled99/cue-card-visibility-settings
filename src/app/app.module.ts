@@ -9,6 +9,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 import { AppComponent } from './app.component';
 import { AngularChatComponent } from './angular-chat/angular-chat.component';
@@ -34,6 +36,8 @@ import { AngularChatListChatsComponent } from './angular-chat-list-chats/angular
     MatListModule,
     MatBadgeModule,
     MatGridListModule,
+    MatMenuModule,
+    MatTooltipModule,
     NgClickOutsideDirective
   ], 
   // bootstrap: [AppComponent]
