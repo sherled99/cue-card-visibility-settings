@@ -1,6 +1,6 @@
 <div class="container">
     <app-angular-chat-list-chats *ngIf="isShowChatList" [chatList]="chatList"
-        [selectedChatId]="_selectedChatId"
+        [selectedChatId]="selectedChatId"
         (showChat)="showChat($event)"
         (loadMoreChats)="loadMoreChats()"
     ></app-angular-chat-list-chats>
