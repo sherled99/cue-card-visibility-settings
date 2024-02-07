@@ -11,37 +11,37 @@ import { DTO_Chat } from '../models/DTO_Chat';
 export class AngularChatComponent {
   constructor(public zone: NgZone, private cd: ChangeDetectorRef) {}
 
-  _selectedChatId: string = "";
+  selectedChatId: string = "";
 
   @ViewChild(AngularChatFooterComponent)
   ChatFooter!: any ;
 
   @Input()
-  public isShowChatList = true;
+  isShowChatList = true;
 
   @Input()
-  public serviceHelper: any;
+  serviceHelper: any;
 
   @Input()
-  public ownerId: any;
+  ownerId: any;
 
   @Input()
-  public locale: string = "";
+  locale: string = "";
 
   @Input()
-  public isGoAngularChatSelected: any;
+  isGoAngularChatSelected: any;
 
   @Input()
-  public terrasoft: any;
+  terrasoft: any;
 
   @Input()
-  public sandbox: any;
+  sandbox: any;
 
   @Input()
-  public chatList: DTO_ChatList[] = [];
+  chatList: DTO_ChatList[] = [];
 
   @Input()
-  public chat: DTO_Chat = new DTO_Chat();
+  chat: DTO_Chat = new DTO_Chat();
 
   @Input()
   lastNewIncomeMessageId: any;
@@ -136,20 +136,19 @@ export class AngularChatComponent {
   @Output()
   loadMoreChatList = new EventEmitter<any>();
 
-  public showChat(event: any) {
-    this._selectedChatId = event.chatId;
+  showChat(event: any) {
+    this.selectedChatId = event.chatId;
     this.isShowChatList = false;
     this.serviceHelper.callService("GoChatService", "OpenChatById", (response: any) => {console.log(response)}, event, this);
   }
 
-  public showChatList() {
+  showChatList() {
     this.isShowChatList = true;
     this.chat = new DTO_Chat;
-    this.getChatList();
     this.onResetRowSpanFooter();
   }
 
-  public browserNotification(message: any) {
+  browserNotification(message: any) {
     if (!("Notification" in window)) {
       console.log("This browser does not support notifications.");
     } else if (Notification.permission === "granted") {
@@ -164,7 +163,7 @@ export class AngularChatComponent {
     }
   }
 
-  public onOpenCard(eventData: any) {
+  onOpenCard(eventData: any) {
     this.openCardClick.emit(eventData);
   }
 
@@ -172,13 +171,6 @@ export class AngularChatComponent {
     if(this.rowSpanFooter < 8) {
       this.rowSpanFooter += 1;
       this.rowSpanMessages -= 1;
-    }
-  }
-
-  onDeleteRowSpanFooter() {
-    if(this.rowSpanFooter > 1) {
-      this.rowSpanFooter -= 1;
-      this.rowSpanMessages += 1;
     }
   }
 
