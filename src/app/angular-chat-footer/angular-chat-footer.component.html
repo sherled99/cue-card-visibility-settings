@@ -9,13 +9,15 @@
         </mat-grid-tile>
         <mat-grid-tile [colspan]="14"> 
             <textarea
+                name="messageValue"
+                [(ngModel)]="messageValue"
                 lines="5"
                 #input
                 class="message-input"
-                id="main-input-message"
                 placeholder="{{translateRecord.getTranslateWord(locale, 'placeholder')}}"
-                (keydown.enter)="createNewMessage(input.value, $event)"
+                (keydown.enter)="createNewMessage($event)"
                 (keyup)="onChangeInputSize($event)"
+                #messageinput
             ></textarea>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="4"> 
@@ -23,7 +25,7 @@
             <label for="inputFile" class="footer-btn">
                 <mat-icon>attach_file</mat-icon>
             </label>
-            <button class="footer-btn" (click)="createNewMessage(input.value, $event)">
+            <button class="footer-btn" (click)="createNewMessage($event)">
                 <mat-icon>send</mat-icon>
             </button>
         </mat-grid-tile>    
