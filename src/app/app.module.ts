@@ -2,6 +2,7 @@ import { ApplicationRef, DoBootstrap, Injector, NgModule } from '@angular/core';
 import { createCustomElement } from "@angular/elements";
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 import { NgClickOutsideDirective } from 'ng-click-outside2';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +32,7 @@ import { AngularChatListChatsComponent } from './angular-chat-list-chats/angular
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
     MatIconModule,
     MatDividerModule,
     MatListModule,
@@ -44,8 +46,8 @@ import { AngularChatListChatsComponent } from './angular-chat-list-chats/angular
 })
 
 export class AppModule implements DoBootstrap {
-  constructor(private injector: Injector) {
-  }
+  constructor(private injector: Injector) {}
+  
   ngDoBootstrap(appRef: ApplicationRef): void {
       const el = createCustomElement(AngularChatComponent, { injector: this.injector });
       customElements.define('angular-chat-component', el);

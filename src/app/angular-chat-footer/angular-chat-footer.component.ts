@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output} from '@angular/core';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
 import { DTO_Chat } from '../models/DTO_Chat';
+import { DTO_Message } from '../models/DTO_Message';
 
 @Component({
   selector: 'app-angular-chat-footer',
@@ -9,6 +10,8 @@ import { DTO_Chat } from '../models/DTO_Chat';
   styleUrls: ['./angular-chat-footer.component.scss']
 })
 export class AngularChatFooterComponent {
+  messageValue: string = "";
+
   readonly constants = Constants;
 
   constructor(public translateRecord: TranslateByLocale) {}
@@ -63,52 +66,52 @@ export class AngularChatFooterComponent {
     };
     this.terrasoft.LookupUtilities.open(config, (e:any) => {
       let selectedRow = e.selectedRows.collection.items[0];
-      this.createNewMessage(selectedRow["GoText"], {isTemplate: true, id: selectedRow["Id"]});
+      this.messageValue = selectedRow["GoText"];
+      this.createNewMessage({isTemplate: true, id: selectedRow["Id"]});
       this.refresMessages.emit();
     }, this);
   }
 
-  createNewMessage(message: string, event: any) {
+  createNewMessage(event: any) {
     if(event !== null && event.key == 'Enter') {
       event.preventDefault();
     }
 
-    if(message.replace(/^\s*[\r\n ]/gm, '') === '') {
+    if(this.messageValue.replace(/^\s*[\r\n ]/gm, '') === '') {
       return;
     }
-    let newMsg = {
-        type: 'text',
-        unixDate: new Date(),
-        text: message,
-        send_type: 'outbound',
-        status: 'new',
-        id: '',
-        isSkipUTC: false
-    };
-    this.chat.messages.push(newMsg);
-
-    let inputValue = (document.getElementById('main-input-message') as HTMLInputElement) !== null ?
-      (document.getElementById('main-input-message') as HTMLInputElement) :
-      { value: ' ' };
-    inputValue.value = ''; 
-    this.resetRowspanInput.emit();
 
     let args:Record<string, any>  = {
       chatId: this.chat.chat.id,
-      text: message
+      text: this.messageValue
     };
 
     if(event && event.isTemplate){
       args['TemplateId'] = event.id
     }
+    this.messageValue = "";
+    this.resetRowspanInput.emit();
     console.log('new message args', args);
+
+    const maskId = this.terrasoft.Mask.show({});
 
     const createConfig = {
       serviceName: "GoChatService",
       methodName: event && event.isTemplate ? 'CreateTemplate' : 'CreateMessage',
-      callback: (messageId: any) => {
-        console.log('messageId ', messageId);
-        newMsg.id = messageId;
+      callback: (message: DTO_Message) => {
+        this.terrasoft.Mask.hide(maskId);
+
+        if(!message.success) {
+          this.terrasoft.showErrorMessage(message.error);
+          console.error("createNewMessage", message);
+
+          return;
+        }
+
+        console.log('createNewMessage', message);
+
+        this.chat.messages.push(message);
+
         this.refresMessages.emit();
         this.changeUnreadMessages.emit('answered');
       },
@@ -121,31 +124,33 @@ export class AngularChatFooterComponent {
   async createNewMediaMessage(event: any) {
     const file = event.target.files[0];
     const fileName = event.target.files[0].name;
-    let imageString = await this.convertBase64(file);
-    let args:Record<string, any>  = {
+    const imageString = await this.convertBase64(file);
+
+    const args:Record<string, any>  = {
       chatId: this.chat.chat.id,
       filename: fileName,
       data: imageString
     };
 
-    let newMsg = {
-      type: 'media',
-          unixDate: new Date(),
-          text: fileName,
-          send_type: 'outbound',
-          status: 'new',
-          id: '',
-          isSkipUTC: true,
-          chatId: this.chat.chat.id
-    };
-    this.chat.messages.push(newMsg);
+    const maskId = this.terrasoft.Mask.show({});
 
     const config = {
       serviceName: "GoChatService",
       methodName: "UploadMedia",
-      callback: (result: any) => {
-        newMsg.id = result.media_id;
-        console.log('newMsg ', newMsg);
+      callback: (message: DTO_Message) => {
+        this.terrasoft.Mask.hide(maskId);
+
+        if(!message.success) {
+          this.terrasoft.showErrorMessage(message.error);
+          console.error("createNewMessage", message);
+          
+          return;
+        }
+
+        console.log('createNewMediaMessage', message);
+
+        this.chat.messages.push(message);
+
         this.refresMessages.emit();
         this.changeUnreadMessages.emit('answered');
       },
@@ -156,17 +161,19 @@ export class AngularChatFooterComponent {
   }
 
   get isHideWelconeMessageBtn() {
-    return this.isTelegramMessanger() || this.isHasTodayIncometMessage();
+    return this.isTelegramMessanger() || this.isHasTodayIncomeMessage();
   }
   
-  isHasTodayIncometMessage() {
+  isHasTodayIncomeMessage() {
     let currentUserTime = this.getCurrentUserTimeStamp();
 
     return this.chat?.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
   }
 
   isTelegramMessanger() {
-    return Constants.Messanger.Code.telegram === this.chat?.channel?.code;
+    return this.chat &&
+      this.chat.channel &&
+      this.chat.channel.code === Constants.Messanger.Code.telegram;
   }
 
   getCurrentUTCTimeStamp() {
@@ -185,7 +192,7 @@ export class AngularChatFooterComponent {
   
   getCurrentUserTimeStamp() {
     let utcNow = this.getCurrentUTCTimeStamp();
-    return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET*60000;
+    return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET * 60000;
   }
 
   convertBase64 (file: any) {

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, OnDestroy} from '@angular/core';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
+import { DTO_Chat } from '../models/DTO_Chat';
 
 
 @Component({
@@ -23,7 +24,7 @@ export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
   locale: any;
   
   @Input()
-  chat: any;
+  chat: DTO_Chat = new DTO_Chat();
 
   @Input()
   chatRelatedLinks: any;

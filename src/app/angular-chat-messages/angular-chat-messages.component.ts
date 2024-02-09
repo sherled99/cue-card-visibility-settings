@@ -3,6 +3,7 @@ import { ConvertDateService } from '../services/convert-date.service';
 import { TranslateByLocale } from '../services/translate-by-locate.service';
 import { Constants } from '../common/constants';
 import { DTO_Chat } from '../models/DTO_Chat';
+import { DTO_Message } from '../models/DTO_Message';
 
 @Component({
   selector: 'app-angular-chat-messages',
@@ -60,7 +61,7 @@ export class AngularChatMessagesComponent implements OnChanges {
       return;
     }
 
-    let resultMessages: Array<any> = [];
+    let resultMessages: Array<DTO_Message> = [];
     let prevDate = 0;
 
     const today = new Date().setHours(0,0,0,0);
@@ -82,6 +83,16 @@ export class AngularChatMessagesComponent implements OnChanges {
         prevDate = messageDate;
         let deilimeterStr = `${new Date(messageDate).getDate()} ${months[new Date(messageDate).getMonth()]}`;
         resultMessages.push({
+          success: true,
+          error: "",
+          type: "",
+          unixDate: 0,
+          status: 'new',
+          id: "",
+          date: "",
+          isSkipUTC: false,
+          config: "",
+          answerId: "",
           text: messageDate == today ? toDayStr : deilimeterStr,
           send_type: 'delimiter'
         });
@@ -113,15 +124,15 @@ export class AngularChatMessagesComponent implements OnChanges {
     }
   }
 
-  processMessage(message: any) {
+  processMessage(message: DTO_Message) {
     return `${this.checkHrefInMessage(message.text)} ${this.addDateAndStatusToMessage(message)}`;
   }
 
-  processMediaMessage(message:any) {
+  processMediaMessage(message: DTO_Message) {
     return `${this.checkSendTypeMediaMessage(message)}`;
   }
 
-  checkSendTypeMediaMessage(message: any) {
+  checkSendTypeMediaMessage(message: DTO_Message) {
     let textMsg  = message.send_type === 'outbound' ?
       message.text :
       this.translateRecord.getTranslateWord(this.locale, 'mediaMessageInbound');
@@ -136,7 +147,7 @@ export class AngularChatMessagesComponent implements OnChanges {
       </div>`;
   }
 
-  addDateAndStatusToMessage(message: any) {
+  addDateAndStatusToMessage(message: DTO_Message) {
     return `
       <div class="${message.send_type == 'delimiter' ?
         'message-time-delimiter' :
@@ -158,7 +169,7 @@ export class AngularChatMessagesComponent implements OnChanges {
     return mess.split('\n').join('<br>');                
   }
 
-  downloadFile(messageId: any) {
+  downloadFile(messageId: string) {
     const config = {
       serviceName: "GoChatService",
       methodName: "GetMedia",

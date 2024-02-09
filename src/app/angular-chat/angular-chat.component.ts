@@ -2,6 +2,7 @@ import { Component, ViewChild, NgZone, Input, Output, EventEmitter, ChangeDetect
 import { AngularChatFooterComponent } from '../angular-chat-footer/angular-chat-footer.component';
 import { DTO_ChatList } from '../models/DTO_ChatList';
 import { DTO_Chat } from '../models/DTO_Chat';
+import { DTO_Message } from '../models/DTO_Message';
 
 @Component({
   selector: 'app-angular-chat',
@@ -87,13 +88,16 @@ export class AngularChatComponent {
       if(existedMessage) {
         this.chat.messages[this.chat.messages.indexOf(existedMessage)].text = message.text;
       } else {
-        let newMsg = {
+        let newMsg: DTO_Message = {
+          success: true,
+          error: "",
           type: message.type,
           unixDate: message.unixDate,
           text: message.text,
           send_type: 'inbound',
           status: 'new',
           id: message.id,
+          date: "",
           isSkipUTC: false,
           config: message.config,
           answerId: message.answerId
@@ -107,8 +111,14 @@ export class AngularChatComponent {
   }
 
   @Input()
-  public set updateStatusMessage(message: any) {
-    this.chat.messages.find(x => x.id === message.id).status = message.status;
+  public set updateStatusMessage(message: DTO_Message) {
+    if(!this.chat || !this.chat.messages) {
+      return;
+    }
+    let findingMessage = this.chat.messages.find(x => x.id === message.id);
+    if(findingMessage) {
+      findingMessage.status = message.status;
+    }
   }
 
   @Input()
@@ -144,7 +154,7 @@ export class AngularChatComponent {
     if(!this.chat || !this.chat.messages) {
       return;
     }
-    let unreadMessages: Array<any> = this.chat.messages.filter((message) => {
+    let unreadMessages: Array<DTO_Message> = this.chat.messages.filter((message) => {
       if(message.send_type !== 'inbound') {
         return false;
       }
@@ -178,7 +188,9 @@ export class AngularChatComponent {
   showChat(event: any) {
     this.selectedChatId = event.chatId;
     this.isShowChatList = false;
-    this.serviceHelper.callService("GoChatService", "OpenChatById", (response: any) => {console.log(response)}, event, this);
+    this.serviceHelper.callService("GoChatService", "OpenChatById", (response: any) => {
+      console.log(response)
+    }, event, this);
   }
 
   showChatList() {
