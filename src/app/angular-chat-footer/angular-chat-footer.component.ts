@@ -37,49 +37,38 @@ export class AngularChatFooterComponent {
   @Output()
   refresMessages = new EventEmitter<any>();
 
-  updateIncomeMessagesStatus(changedMessageIds: any, status: string) {
-    if(changedMessageIds?.length == 0) {
-      return;
-    }
-    this.chat.messages = this.chat.messages.map((x: any) => {
-      if(changedMessageIds.find((msg: any) => msg.id == x.id)) {
-        x.status = status;
-      }
-      return x;
-    });
-    this.refresMessages.emit({});
-  }
+  @Output()
+  changeUnreadMessages = new EventEmitter<any>();
 
-  saveNewIncomeMessage(message: any) {
-    console.log('saveNewIncomeMessage', message);
+  showTemplateLookup(type: string) {
+    const filters = this.terrasoft.createFilterGroup();
+    filters.addItem(
+      this.terrasoft.createColumnFilterWithParameter(
+        this.terrasoft.ComparisonType.EQUAL,
+        "GoType",
+        type
+      )
+    );
 
-    if(this.chat.chat.id !== message.chatId) {
-      return;
-    }
-    let newMsg = {
-      type: message.type,
-      unixDate: message.unixDate,
-      text: message.text,
-      send_type: 'inbound',
-      status: 'new',
-      id: message.id,
-      isSkipUTC: false,
-      config: message.config,
-      answerId: message.answerId
+    const lookupConfig = {
+      entitySchemaName: "GoMsgTemplateMessage",
+      multiSelect: false,
+      columns: ["Id", "GoName", "GoText"],
+      filters: filters
     };
-    console.log('saveNewIncomeMessage', newMsg)
-
-    let existedMessage = this.chat.messages.find((el: any) => el.id === message.id);
-
-    if(existedMessage) {
-      this.chat.messages[this.chat.messages.indexOf(existedMessage)].text = message.text;
-    } else {
-      this.chat.messages.push(newMsg);
-    }
-    this.refresMessages.emit({});
+    const config = {
+      "lookupConfig": lookupConfig,
+      "sandbox": this.sandbox,
+      "keepAlive": false
+    };
+    this.terrasoft.LookupUtilities.open(config, (e:any) => {
+      let selectedRow = e.selectedRows.collection.items[0];
+      this.createNewMessage(selectedRow["GoText"], {isTemplate: true, id: selectedRow["Id"]});
+      this.refresMessages.emit();
+    }, this);
   }
 
-  saveNewOutcomeMessage(message: string, event: any) {
+  createNewMessage(message: string, event: any) {
     if(event !== null && event.key == 'Enter') {
       event.preventDefault();
     }
@@ -120,65 +109,50 @@ export class AngularChatFooterComponent {
       callback: (messageId: any) => {
         console.log('messageId ', messageId);
         newMsg.id = messageId;
-        this.refresMessages.emit({});
+        this.refresMessages.emit();
+        this.changeUnreadMessages.emit('answered');
       },
       scope: this,
       data: args
     };
     this.serviceHelper.callService(createConfig);
-
-    let listIncomeMessage = this.chat.messages
-      .filter((x: any) =>
-        (x.status === 'seen' || x.status === 'new') && x.send_type ==='inbound')
-      .map((x: { id: any; }) => x.id);
-    console.log('listIncomeMessage', listIncomeMessage);
-
-    if(!listIncomeMessage || listIncomeMessage.length === 0) {
-      return;
-    }
-    const changeMessageStatusConfig = {
-      serviceName: "GoChatService",
-      methodName: "ChangeMessageStatus",
-      callback: (messageIds: any) => {
-        this.updateIncomeMessagesStatus(messageIds, 'answered');
-      },
-      scope: this,
-      data: {
-        chatId: this.chat.chat.id,
-        msgIds: listIncomeMessage,
-        newStatusId: Constants.Message.Status.answered
-      }
-    };
-    this.serviceHelper.callService(changeMessageStatusConfig);
   }
 
-  showTemplateLookup(type: string) {
-    let filters = this.terrasoft.createFilterGroup();
-    filters.name = "typeFilter";
-    filters.logicalComparisonTypes = this.terrasoft.LogicalOperatorType.AND;
-    filters.GoType = type;
-    let typeFilter = this.terrasoft.createColumnFilterWithParameter(
-      this.terrasoft.ComparisonType.EQUAL, "GoType",
-      type);
-
-    filters.addItem(typeFilter);
-
-    const lookupConfig = {
-      entitySchemaName: "GoMsgTemplateMessage",
-      multiSelect: false,
-      columns: ["Id", "GoName", "GoText"],
-      filters: filters
+  async createNewMediaMessage(event: any) {
+    const file = event.target.files[0];
+    const fileName = event.target.files[0].name;
+    let imageString = await this.convertBase64(file);
+    let args:Record<string, any>  = {
+      chatId: this.chat.chat.id,
+      filename: fileName,
+      data: imageString
     };
+
+    let newMsg = {
+      type: 'media',
+          unixDate: new Date(),
+          text: fileName,
+          send_type: 'outbound',
+          status: 'new',
+          id: '',
+          isSkipUTC: true,
+          chatId: this.chat.chat.id
+    };
+    this.chat.messages.push(newMsg);
+
     const config = {
-      "lookupConfig": lookupConfig,
-      "sandbox": this.sandbox,
-      "keepAlive": false
+      serviceName: "GoChatService",
+      methodName: "UploadMedia",
+      callback: (result: any) => {
+        newMsg.id = result.media_id;
+        console.log('newMsg ', newMsg);
+        this.refresMessages.emit();
+        this.changeUnreadMessages.emit('answered');
+      },
+      scope: this,
+      data: args
     };
-    this.terrasoft.LookupUtilities.open(config, (e:any) => {
-      let selectedRow = e.selectedRows.collection.items[0];
-      this.saveNewOutcomeMessage(selectedRow["GoText"], {isTemplate: true, id: selectedRow["Id"]});
-      this.refresMessages.emit({});
-    }, this);
+    this.serviceHelper.callService(config);
   }
 
   get isHideWelconeMessageBtn() {
@@ -212,40 +186,6 @@ export class AngularChatFooterComponent {
   getCurrentUserTimeStamp() {
     let utcNow = this.getCurrentUTCTimeStamp();
     return utcNow + this.terrasoft.SysValue.CURRENT_USER_TIMEZONE_OFFSET*60000;
-  }
-
-  async uploadFileFromInput(event: any) {
-    const file = event.target.files[0];
-    const fileName = event.target.files[0].name;
-    let imageString = await this.convertBase64(file);
-    let args:Record<string, any>  = {
-      chatId: this.chat.chat.id,
-      filename: fileName,
-      data: imageString
-    };
-
-    const config = {
-      serviceName: "GoChatService",
-      methodName: "UploadMedia",
-      callback: (result: any) => {
-        let newMsg = {
-          type: 'media',
-          unixDate: new Date(),
-          text: fileName,
-          send_type: 'outbound',
-          status: 'new',
-          id: result.media_id,
-          isSkipUTC: true,
-          chatId: this.chat.chat.id
-        };
-        console.log('newMsg ', newMsg);
-
-        this.chat.messages.push(newMsg);
-      },
-      scope: this,
-      data: args
-    };
-    this.serviceHelper.callService(config);
   }
 
   convertBase64 (file: any) {
