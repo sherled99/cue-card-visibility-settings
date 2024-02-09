@@ -82,7 +82,25 @@ export class AngularChatComponent {
     } 
 
     if(this.chat?.chat?.id === message.chatId) {
-      this.ChatFooter.saveNewIncomeMessage(message);
+      let existedMessage = this.chat.messages.find((el: any) => el.id === message.id);
+
+      if(existedMessage) {
+        this.chat.messages[this.chat.messages.indexOf(existedMessage)].text = message.text;
+      } else {
+        let newMsg = {
+          type: message.type,
+          unixDate: message.unixDate,
+          text: message.text,
+          send_type: 'inbound',
+          status: 'new',
+          id: message.id,
+          isSkipUTC: false,
+          config: message.config,
+          answerId: message.answerId
+        };
+        this.chat.messages.push(newMsg);
+      }
+      this.onRefreshMessages();
       this.readIncomeMessages();
       this.browserNotification(message);
     }
@@ -103,25 +121,11 @@ export class AngularChatComponent {
   }
 
   @Input()
-  public readIncomeMessages() {
+  readIncomeMessages() {
     if(this.chat.access == 'read' || !this.isGoAngularChatSelected) {
       return;
     }
-    let unreadMeaasgeIds = this.chat.messages?.filter(x=>x.status === 'new' && x.send_type ==='inbound').map(x=>x.id);
-
-    if(unreadMeaasgeIds.length == 0) {
-      return;
-    }
-    this.serviceHelper.callService({
-      serviceName: "GoChatService",
-      methodName: "ChangeMessageStatus",
-      callback: function(messageIds: any){
-        this.ChatFooter.updateIncomeMessagesStatus(messageIds, 'seen');
-        this.chat.messages = Object.assign([],  this.chat.messages);
-      },
-      scope: this,
-      data: {chatId: this.chat.chat.id, msgIds: unreadMeaasgeIds}
-    }, this);
+    this.changeUnreadMessages('seen');
   }
 
   @Output()
@@ -135,6 +139,41 @@ export class AngularChatComponent {
 
   @Output()
   loadMoreChatList = new EventEmitter<any>();
+
+  changeUnreadMessages(status: string) {
+    if(!this.chat || !this.chat.messages) {
+      return;
+    }
+    let unreadMessages: Array<any> = this.chat.messages.filter((message) => {
+      if(message.send_type !== 'inbound') {
+        return false;
+      }
+      if(status !== 'answered') {
+        return message.status === 'new';
+      } else {
+        return message.status === 'new' || message.status === 'seen';
+      }
+    });
+    
+    if(unreadMessages.length == 0) {
+      return;
+    }
+    this.serviceHelper.callService({
+      serviceName: "GoChatService",
+      methodName: "ChangeMessageStatus",
+      callback: (messageIds: any) => {
+        unreadMessages.forEach((message) => {
+          message.status = status;
+        })
+        this.onRefreshMessages();
+      },
+      scope: this,
+      data: {
+        chatId: this.chat.chat.id,
+        msgIds: unreadMessages.map(x=>x.id)
+      }
+    }, this);
+  }
 
   showChat(event: any) {
     this.selectedChatId = event.chatId;
@@ -180,7 +219,7 @@ export class AngularChatComponent {
     this.rowSpanFooter = 1;
   }
 
-  onRefreshMessages(event: any) {
+  onRefreshMessages() {
     this.zone.run(() => this.chat = Object.assign({}, this.chat));
     this.zone.run(() => this.chat = Object.assign({}, this.chat));
   }

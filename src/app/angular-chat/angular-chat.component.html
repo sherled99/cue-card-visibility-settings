@@ -34,7 +34,8 @@
                 [serviceHelper]="serviceHelper"
                 (editRowspanInput)="onEditRowSpanFooter()"
                 (resetRowspanInput)="onResetRowSpanFooter()"
-                (refresMessages)="onRefreshMessages($event)"
+                (refresMessages)="onRefreshMessages()"
+                (changeUnreadMessages)="changeUnreadMessages($event)"
             ></app-angular-chat-footer>
         </mat-grid-tile>           
     </mat-grid-list>    

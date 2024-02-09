@@ -14,16 +14,16 @@
                 class="message-input"
                 id="main-input-message"
                 placeholder="{{translateRecord.getTranslateWord(locale, 'placeholder')}}"
-                (keydown.enter)="saveNewOutcomeMessage(input.value, $event)"
+                (keydown.enter)="createNewMessage(input.value, $event)"
                 (keyup)="onChangeInputSize($event)"
             ></textarea>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="4"> 
-            <input type="file" class="footer-btn" id="inputFile" (change)="uploadFileFromInput($event)" style="display: none;" >
+            <input type="file" class="footer-btn" id="inputFile" (change)="createNewMediaMessage($event)" style="display: none;" >
             <label for="inputFile" class="footer-btn">
                 <mat-icon>attach_file</mat-icon>
             </label>
-            <button class="footer-btn" (click)="saveNewOutcomeMessage(input.value, $event)">
+            <button class="footer-btn" (click)="createNewMessage(input.value, $event)">
                 <mat-icon>send</mat-icon>
             </button>
         </mat-grid-tile>    
