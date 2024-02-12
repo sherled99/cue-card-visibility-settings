@@ -197,6 +197,7 @@ export class AngularChatComponent {
     this.isShowChatList = true;
     this.chat = new DTO_Chat;
     this.onResetRowSpanFooter();
+    this.cd.detectChanges();
   }
 
   browserNotification(message: any) {
