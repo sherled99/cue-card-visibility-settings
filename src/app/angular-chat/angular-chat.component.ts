@@ -60,8 +60,9 @@ export class AngularChatComponent {
   chatRelatedLinks: any;
 
   @Input()
-  public set openChat(chat: any) {
+  public set openChat(chat: DTO_Chat) {
     console.log('openChat: ', chat);
+    this.selectedChatId = chat && chat.chat && chat.chat.id;
     this.chat = chat;
     this.isShowChatList = false;
     this.readIncomeMessages();
@@ -75,8 +76,6 @@ export class AngularChatComponent {
     this.lastNewIncomeMessageId = message.id;
 
     if((this.isShowChatList || !this.isGoAngularChatSelected)) {
-      this.getChat({chatId: message.chatId});
-
       if(this.chatList.find((el: any) => el.id === message.chatId)) {
         this.browserNotification(message);
       }
@@ -143,9 +142,6 @@ export class AngularChatComponent {
 
   @Output()
   refreshChatList = new EventEmitter<any>();
-
-  @Output()
-  refreshChat = new EventEmitter<any>();
 
   @Output()
   loadMoreChatList = new EventEmitter<any>();
@@ -239,10 +235,6 @@ export class AngularChatComponent {
 
   getChatList() {
     this.refreshChatList.emit();
-  }
-
-  getChat(eventData: any) {
-    this.refreshChat.emit(eventData);
   }
 
   loadMoreChats() {
