@@ -9,6 +9,8 @@ import { DTO_Chat } from '../models/DTO_Chat';
   styleUrls: ['./angular-chat-header.component.scss'],
 })
 export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
+  openChatDate: number = new Date().getTime();
+  
   constructor(public translateRecord: TranslateByLocale) {}
 
   @Input()
@@ -41,10 +43,29 @@ export class AngularChatHeaderComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('destroy');
+    this.sendSpendTime();
   }
 
   onBeforeUnload(e: any) {
-    var e = e || window.event;
+    e = e || window.event;
+    this.sendSpendTime();
+  }
+
+  sendSpendTime() {
+    const seconds = (new Date().getTime() - this.openChatDate) / 1000;
+    const config = {
+      serviceName: "GoChatService",
+      methodName: "SendSpendTime",
+      callback: (response: any) => {
+        console.log(response);
+      },
+      scope: this,
+      data: {
+        chatId: this.chat.chat.id,
+        seconds: seconds
+      }
+    };
+    this.serviceHelper.callService(config);
   }
 
   backToAllList() {

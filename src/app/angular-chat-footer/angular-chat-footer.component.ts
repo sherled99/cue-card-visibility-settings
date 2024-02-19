@@ -56,7 +56,7 @@ export class AngularChatFooterComponent {
     const lookupConfig = {
       entitySchemaName: "GoMsgTemplateMessage",
       multiSelect: false,
-      columns: ["Id", "GoName", "GoText"],
+      columns: ["Id", "GoName", "GoText", "GoConfig"],
       filters: filters
     };
     const config = {
