@@ -3,6 +3,7 @@ import { AngularChatFooterComponent } from '../angular-chat-footer/angular-chat-
 import { DTO_ChatList } from '../models/DTO_ChatList';
 import { DTO_Chat } from '../models/DTO_Chat';
 import { DTO_Message } from '../models/DTO_Message';
+import { Constants } from '../common/constants';
 
 @Component({
   selector: 'app-angular-chat',
@@ -176,7 +177,10 @@ export class AngularChatComponent {
       scope: this,
       data: {
         chatId: this.chat.chat.id,
-        msgIds: unreadMessages.map(x=>x.id)
+        msgIds: unreadMessages.map(x=>x.id),
+        newStatusId: status === 'answered' ?
+          Constants.Message.Status.answered :
+          this.terrasoft.Terrasoft.GUID_EMPTY
       }
     }, this);
   }
