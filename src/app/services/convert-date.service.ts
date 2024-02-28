@@ -14,9 +14,10 @@ export class ConvertDateService {
 
   public convertTimestamp(timestamp: any, isSkipUTC: any) {
     let newDate = new Date(timestamp);
-    return isSkipUTC ?
-      `${this.addZero(newDate.getHours())}:${this.addZero(newDate.getMinutes())}` :
-      `${this.addZero(newDate.getUTCHours())}:${this.addZero(newDate.getUTCMinutes())}`;
+    return `${this.addZero(newDate.getHours())}:${this.addZero(newDate.getMinutes())}`;
+    // return isSkipUTC ?
+    //   `${this.addZero(newDate.getHours())}:${this.addZero(newDate.getMinutes())}` :
+    //   `${this.addZero(newDate.getUTCHours())}:${this.addZero(newDate.getUTCMinutes())}`;
   }
 
   public convertTimestampToLastDate(timestamp: any) {
