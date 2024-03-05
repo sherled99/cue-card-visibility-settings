@@ -180,7 +180,7 @@ export class AngularChatComponent {
         msgIds: unreadMessages.map(x=>x.id),
         newStatusId: status === 'answered' ?
           Constants.Message.Status.answered :
-          this.terrasoft.Terrasoft.GUID_EMPTY
+          this.terrasoft.GUID_EMPTY
       }
     }, this);
   }
