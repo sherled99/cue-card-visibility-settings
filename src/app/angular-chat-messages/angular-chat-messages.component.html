@@ -15,7 +15,7 @@
                     <mat-icon>remove_red_eye</mat-icon>
                 </button>
             </div>
-            <div *ngIf="message.type === 'buttons'">
+            <div *ngIf="message.config">
                 <div [class]="message.send_type === 'outbound' ? 'outbound-btns-msg' : 'inbound-btns-msg'">
                     <div *ngFor="let item of parseMsgConfigToBtns(message.config)">
                         <button [class]="item.id === message.answerId ? 'button-link-message-entered' : 'button-link-message'" [id]="item.id">{{item.text}}</button>
