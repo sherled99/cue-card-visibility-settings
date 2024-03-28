@@ -11,4 +11,5 @@ export class DTO_Message {
     "text": string;
     "type": string;
     "isSkipUTC": boolean;
+    "caption"?: string;
 }

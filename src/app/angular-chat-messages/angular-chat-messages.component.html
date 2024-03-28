@@ -5,7 +5,7 @@
             <div [class]="arrayClassNameByMessage[message.send_type]">    
                 <div *ngIf="message.type == 'media'">
                     <div class="media-message-container">
-                    <span class="media-message-icon material-icons" (click)="downloadFile(message.id)">download_for_offline</span>
+                        <span class="media-message-icon material-icons" (click)="downloadFile(message.id)">download_for_offline</span>
                         <div class="media-message" [innerHtml]="processMediaMessage(message)"></div>
                     </div>
                 </div>
