@@ -133,18 +133,29 @@ export class AngularChatMessagesComponent implements OnChanges {
   }
 
   checkSendTypeMediaMessage(message: DTO_Message) {
-    let textMsg  = message.send_type === 'outbound' ?
+    const isOutbound = message.send_type === 'outbound';
+    const textMsg  = isOutbound ?
       message.text :
-      this.translateRecord.getTranslateWord(this.locale, 'mediaMessageInbound');
+      `${this.translateRecord.getTranslateWord(this.locale, 'mediaMessageInbound')}`;
 
-    let msgClass = message.send_type === 'outbound' ?
+    const msgClass = isOutbound ?
       'outbound-media' :
       '';
 
+    const textCaption = !isOutbound ? this.addTextCaption(message) : '';
+
     return `
       <div class="${msgClass}">
-        ${textMsg} ${this.addDateAndStatusToMessage(message)}
+        ${textMsg} ${textCaption} ${this.addDateAndStatusToMessage(message)}
       </div>`;
+  }
+
+  addTextCaption(message: DTO_Message){
+    return `
+      <div class="text-caption">
+        ${message?.caption}
+      </div>
+    `;
   }
 
   addDateAndStatusToMessage(message: DTO_Message) {
