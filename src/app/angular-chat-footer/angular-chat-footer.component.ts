@@ -161,13 +161,19 @@ export class AngularChatFooterComponent {
   }
 
   get isHideWelconeMessageBtn() {
-    return this.isTelegramMessanger() || this.isHasTodayIncomeMessage();
+    return this.isTelegramMessanger() || this.isHasTodayIncomeMessage() || this.hasTodayButtonClicked();
   }
   
   isHasTodayIncomeMessage() {
     let currentUserTime = this.getCurrentUserTimeStamp();
 
     return this.chat?.messages?.find((x: any) => x.send_type === 'inbound' && (x.unixDate > currentUserTime - 86400000));
+  }
+
+  hasTodayButtonClicked() {
+    let currentUserTime = this.getCurrentUserTimeStamp();
+
+    return this.chat?.messages?.find((x: any) => x.send_type === 'outbound' && x.type === 'buttons' && (x.buttonClickedUnixDate > currentUserTime - 86400000));
   }
 
   isTelegramMessanger() {

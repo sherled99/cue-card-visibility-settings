@@ -94,7 +94,8 @@ export class AngularChatMessagesComponent implements OnChanges {
           config: "",
           answerId: "",
           text: messageDate == today ? toDayStr : deilimeterStr,
-          send_type: 'delimiter'
+          send_type: 'delimiter',
+          buttonClickedUnixDate: 0
         });
       }
       resultMessages.push(listMessage);
