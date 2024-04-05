@@ -165,24 +165,11 @@ export class AngularChatComponent {
     if(unreadMessages.length == 0) {
       return;
     }
-    this.serviceHelper.callService({
-      serviceName: "GoChatService",
-      methodName: "ChangeMessageStatus",
-      callback: (messageIds: any) => {
-        unreadMessages.forEach((message) => {
-          message.status = status;
-        })
-        this.onRefreshMessages();
-      },
-      scope: this,
-      data: {
-        chatId: this.chat.chat.id,
-        msgIds: unreadMessages.map(x=>x.id),
-        newStatusId: status === 'answered' ?
-          Constants.Message.Status.answered :
-          this.terrasoft.GUID_EMPTY
-      }
-    }, this);
+
+    unreadMessages.forEach((message) => {
+      message.status = status;
+    })
+    this.onRefreshMessages();
   }
 
   showChat(event: any) {
