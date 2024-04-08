@@ -12,4 +12,5 @@ export class DTO_Message {
     "type": string;
     "isSkipUTC": boolean;
     "caption"?: string;
+    "buttonClickedUnixDate": number;
 }

@@ -100,7 +100,8 @@ export class AngularChatComponent {
           date: "",
           isSkipUTC: false,
           config: message.config,
-          answerId: message.answerId
+          answerId: message.answerId,
+          buttonClickedUnixDate: message.buttonClickedUnixDate
         };
         this.chat.messages.push(newMsg);
       }
