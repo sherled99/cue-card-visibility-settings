@@ -1,0 +1,4 @@
+include:
+  - project: go/cicd
+    ref: main
+    file: /projects/GoNgChatComponent.gitlab-ci.yml
