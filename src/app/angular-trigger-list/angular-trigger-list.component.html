@@ -1,0 +1,70 @@
+<div class="tkp">
+  <!-- Top input for adding triggers -->
+  <div class="tkp-top">
+    <input
+      class="tkp-search"
+      placeholder="Enter keyword or phrase and press Enter"
+      [(ngModel)]="newTriggerName"
+      (keyup.enter)="addTrigger()"
+    />
+    <button class="tkp-plus" type="button" (click)="addTrigger()">+</button>
+  </div>
+
+  <!-- Trigger list -->
+  <div *ngFor="let trigger of triggersWithSynonyms" class="tkp-row">
+    <div class="tkp-left">
+      <!-- Trigger title -->
+      <div class="tkp-title">{{ trigger.title }}</div>
+      <span class="tkp-eq">=</span>
+
+      <!-- Synonyms list -->
+      <div class="tkp-chips">
+        <ng-container *ngFor="let synonym of trigger.synonyms">
+          <span class="tkp-chip">
+            {{ synonym.name }}
+            <button
+              class="tkp-x"
+              type="button"
+              aria-label="remove"
+              (click)="removeSynonym(trigger.id, synonym.id)"
+            >
+              ×
+            </button>
+          </span>
+        </ng-container>
+
+        <!-- Add synonym input -->
+        <button
+          *ngIf="!trigger.newSynonymConfirmed"
+          class="tkp-add-link"
+          type="button"
+          (click)="trigger.newSynonymConfirmed = true"
+        >
+          + Add synonym
+        </button>
+        <input
+          *ngIf="trigger.newSynonymConfirmed"
+          #newSynonymInput
+          [(ngModel)]="trigger.newSynonym"
+          placeholder="Enter synonym"
+          (keyup.enter)="addSynonym(trigger.id, trigger.newSynonym); trigger.newSynonymConfirmed = false"
+          (ngModelChange)="focusInput(newSynonymInput)"
+        />
+      </div>
+
+      <!-- Optional note -->
+      <div *ngIf="trigger.note" class="tkp-note">
+        <span class="tkp-refresh" aria-hidden="true"></span>
+        {{ trigger.note }}
+      </div>
+    </div>
+
+    <!-- Delete trigger button -->
+    <button
+      class="tkp-trash"
+      type="button"
+      aria-label="delete"
+      (click)="removeTrigger(trigger.id)"
+    ></button>
+  </div>
+</div>

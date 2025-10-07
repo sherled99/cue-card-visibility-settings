@@ -14,20 +14,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from "@angular/material/tooltip";
 
 import { AppComponent } from './app.component';
-import { AngularChatComponent } from './angular-chat/angular-chat.component';
-import { AngularChatHeaderComponent } from './angular-chat-header/angular-chat-header.component';
-import { AngularChatFooterComponent } from './angular-chat-footer/angular-chat-footer.component';
-import { AngularChatMessagesComponent } from './angular-chat-messages/angular-chat-messages.component';
-import { AngularChatListChatsComponent } from './angular-chat-list-chats/angular-chat-list-chats.component';
+import { CuecardTriggerComponent } from './angular-trigger-list/angular-trigger-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AngularChatComponent,
-    AngularChatHeaderComponent,
-    AngularChatFooterComponent,
-    AngularChatMessagesComponent,
-    AngularChatListChatsComponent
+    CuecardTriggerComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +41,7 @@ export class AppModule implements DoBootstrap {
   constructor(private injector: Injector) {}
   
   ngDoBootstrap(appRef: ApplicationRef): void {
-      const el = createCustomElement(AngularChatComponent, { injector: this.injector });
-      customElements.define('angular-chat-component', el);
+      const el = createCustomElement(CuecardTriggerComponent, { injector: this.injector });
+      customElements.define('angular-trigger-synonyms-component', el);
   }
 }

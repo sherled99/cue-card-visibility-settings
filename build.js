@@ -1,12 +1,12 @@
 const fs = require('fs-extra');
 const concat = require('concat');
-const componentPath = './dist/angular-chat-ui/angular-chat-component.js';
+const componentPath = './dist/cue-card-trigger-synonyms/angular-trigger-synonyms-component.js';
  
 (async function build() {
    const files = [
-      './dist/angular-chat-ui/runtime.js',
-      './dist/angular-chat-ui/polyfills.js',
-      './dist/angular-chat-ui/main.js',
+      './dist/cue-card-trigger-synonyms/runtime.js',
+      './dist/cue-card-trigger-synonyms/polyfills.js',
+      './dist/cue-card-trigger-synonyms/main.js',
    ].filter((x) => fs.pathExistsSync(x));
    await fs.ensureFile(componentPath);
    await concat(files, componentPath);
