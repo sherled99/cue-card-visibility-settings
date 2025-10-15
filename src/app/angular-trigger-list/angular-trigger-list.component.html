@@ -1,70 +1,62 @@
-<div class="tkp">
-  <!-- Top input for adding triggers -->
-  <div class="tkp-top">
-    <input
-      class="tkp-search"
-      placeholder="Enter keyword or phrase and press Enter"
-      [(ngModel)]="newTriggerName"
-      (keyup.enter)="addTrigger()"
-    />
-    <button class="tkp-plus" type="button" (click)="addTrigger()">+</button>
+<div class="filter-panel">
+  <!-- Agent Filter -->
+  <div class="filter-group">
+    <div class="filter-label">
+      <span class="filter-icon">👤</span>
+      <span class="filter-title">Agent</span>
+      <span *ngIf="isLoadingAgents" class="loading-indicator">⟳</span>
+    </div>
+    <div class="filter-tags">
+      <div *ngFor="let filter of selectedAgents; let i = index" class="filter-tag">
+        {{ filter.displayName }}
+        <button class="tag-remove" (click)="removeFilter(selectedFilters.indexOf(filter))">×</button>
+      </div>
+      <select 
+        class="filter-select" 
+        [(ngModel)]="selectedAgentId"
+        (change)="onAgentSelect()"
+        [disabled]="isLoadingAgents"
+      >
+        <option value="">{{ isLoadingAgents ? 'Loading...' : 'Select agent...' }}</option>
+        <option *ngFor="let agent of availableAgents" [value]="agent.id">
+          {{ agent.name }}
+        </option>
+      </select>
+    </div>
+    <button class="clear-filter" (click)="clearAgentFilters()">×</button>
   </div>
 
-  <!-- Trigger list -->
-  <div *ngFor="let trigger of triggersWithSynonyms" class="tkp-row">
-    <div class="tkp-left">
-      <!-- Trigger title -->
-      <div class="tkp-title">{{ trigger.title }}</div>
-      <span class="tkp-eq">=</span>
-
-      <!-- Synonyms list -->
-      <div class="tkp-chips">
-        <ng-container *ngFor="let synonym of trigger.synonyms">
-          <span class="tkp-chip">
-            {{ synonym.name }}
-            <button
-              class="tkp-x"
-              type="button"
-              aria-label="remove"
-              (click)="removeSynonym(trigger.id, synonym.id)"
-            >
-              ×
-            </button>
-          </span>
-        </ng-container>
-
-        <!-- Add synonym input -->
-        <button
-          *ngIf="!trigger.newSynonymConfirmed"
-          class="tkp-add-link"
-          type="button"
-          (click)="trigger.newSynonymConfirmed = true"
-        >
-          + Add synonym
-        </button>
-        <input
-          *ngIf="trigger.newSynonymConfirmed"
-          #newSynonymInput
-          [(ngModel)]="trigger.newSynonym"
-          placeholder="Enter synonym"
-          (keyup.enter)="addSynonym(trigger.id, trigger.newSynonym); trigger.newSynonymConfirmed = false"
-          (ngModelChange)="focusInput(newSynonymInput)"
-        />
-      </div>
-
-      <!-- Optional note -->
-      <div *ngIf="trigger.note" class="tkp-note">
-        <span class="tkp-refresh" aria-hidden="true"></span>
-        {{ trigger.note }}
-      </div>
+  <!-- Queue Filter -->
+  <div class="filter-group">
+    <div class="filter-label">
+      <span class="filter-icon">🎧</span>
+      <span class="filter-title">Queue</span>
+      <span *ngIf="isLoadingQueues" class="loading-indicator">⟳</span>
     </div>
+    <div class="filter-tags">
+      <div *ngFor="let filter of selectedQueues; let i = index" class="filter-tag">
+        {{ filter.displayName }}
+        <button class="tag-remove" (click)="removeFilter(selectedFilters.indexOf(filter))">×</button>
+      </div>
+      <select 
+        class="filter-select" 
+        [(ngModel)]="selectedQueueId"
+        (change)="onQueueSelect()"
+        [disabled]="isLoadingQueues"
+      >
+        <option value="">{{ isLoadingQueues ? 'Loading...' : 'Select queue...' }}</option>
+        <option *ngFor="let queue of availableQueues" [value]="queue.id">
+          {{ queue.name }}
+        </option>
+      </select>
+    </div>
+    <button class="clear-filter" (click)="clearQueueFilters()">×</button>
+  </div>
 
-    <!-- Delete trigger button -->
-    <button
-      class="tkp-trash"
-      type="button"
-      aria-label="delete"
-      (click)="removeTrigger(trigger.id)"
-    ></button>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <span class="error-icon">⚠️</span>
+    {{ errorMessage }}
+    <button class="retry-button" (click)="loadAgents(); loadQueues()">Retry</button>
   </div>
 </div>

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cue-card-trigger-synonyms": {
+    "cue-card-visibility-settings": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/cue-card-trigger-synonyms",
+            "outputPath": "dist/cue-card-visibility-settings",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -66,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "cue-card-trigger-synonyms:build:production"
+              "browserTarget": "cue-card-visibility-settings:build:production"
             },
             "development": {
-              "browserTarget": "cue-card-trigger-synonyms:build:development"
+              "browserTarget": "cue-card-visibility-settings:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -77,7 +77,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cue-card-trigger-synonyms:build"
+            "browserTarget": "cue-card-visibility-settings:build"
           }
         },
         "test": {

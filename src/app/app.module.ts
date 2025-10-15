@@ -42,6 +42,6 @@ export class AppModule implements DoBootstrap {
   
   ngDoBootstrap(appRef: ApplicationRef): void {
       const el = createCustomElement(CuecardTriggerComponent, { injector: this.injector });
-      customElements.define('angular-trigger-synonyms-component', el);
+      customElements.define('angular-visibility-settings-component', el);
   }
 }

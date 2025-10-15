@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 
 @Component({
   selector: "cuecard-trigger",
@@ -6,164 +6,317 @@ import { Component, Input, OnInit, ViewChild, ElementRef } from "@angular/core";
   styleUrls: ["./angular-trigger-list.component.scss"],
 })
 export class CuecardTriggerComponent implements OnInit {
-  @Input() baseUrl = "";
-  @Input() cueCardId: any;
   @Input() serviceHelper: any;
+  @Input() cueCardId: string = "";
 
-  @ViewChild("newSynonymInput") newSynonymInput!: ElementRef;
+  // Available data
+  availableAgents: Agent[] = [];
+  availableQueues: Queue[] = [];
+  
+  // Selected data in unified format
+  selectedFilters: FilterItem[] = [];
+  
+  // Selection values
+  selectedAgentId = "";
+  selectedQueueId = "";
 
-  triggersWithSynonyms: Trigger[] = [];
-  newTriggerName = "";
-  isLoading = false;
-  errorMsg = "";
+  // Loading states
+  isLoadingAgents = false;
+  isLoadingQueues = false;
+  errorMessage = "";
 
   ngOnInit(): void {
-    this.getData();
+    this.loadAgents();
+    this.loadQueues();
+    this.loadVisibilityRules();
   }
 
   /**
-   * Fetches the triggers and their synonyms from the backend.
+   * Loads agents from API
    */
-  getData(): void {
-    const config = this.createServiceConfig("GetTriggersTable", { cueCardId: this.cueCardId }, (res: any) => {
-      if (Array.isArray(res.GetTriggersTableResult)) {
-        this.triggersWithSynonyms = res.GetTriggersTableResult.map(this.mapTrigger);
+  loadAgents(): void {
+    this.isLoadingAgents = true;
+    this.errorMessage = "";
+
+    const config = this.createServiceConfig("GetUsers", {}, (res: any) => {
+      this.isLoadingAgents = false;
+      
+      if (res?.GetUsersResult?.success && res.GetUsersResult.users) {
+        this.availableAgents = res.GetUsersResult.users.map((user: any) => ({
+          id: user.ContactId,
+          name: user.Name
+        }));
+        console.log("Agents loaded successfully:", this.availableAgents.length);
       } else {
-        console.error("Unexpected response format", res);
+        this.errorMessage = res?.GetUsersResult?.error_message || "Failed to load agents";
+        console.error("Failed to load agents:", this.errorMessage);
       }
     });
-    this.serviceHelper?.callService(config);
-  }
 
-  /**
-   * Adds a new trigger if it doesn't already exist.
-   */
-  addTrigger(): void {
-    const newTriggerTitle = this.newTriggerName.trim();
-    if (newTriggerTitle) {
-      const config = this.createServiceConfig("CreateTrigger", { cueCardId: this.cueCardId, triggerName: newTriggerTitle }, (res: any) => {
-        const result = res?.CreateTriggerResult;
-        if (result?.Id) {
-          const existingTrigger = this.findTriggerById(result.Id);
-          if (existingTrigger) {
-            // Add synonyms to the existing trigger
-            result.Synonyms?.forEach((synonym: any) => {
-              if (!existingTrigger.synonyms.some(s => s.id === synonym.Id)) {
-                existingTrigger.synonyms.push({ id: synonym.Id, name: synonym.Text });
-              }
-            });
-          } else {
-            // Create a new trigger with synonyms
-            const newTrigger = this.createTrigger(result.Text, result.Id);
-            newTrigger.synonyms = result.Synonyms?.map((synonym: any) => ({ id: synonym.Id, name: synonym.Text })) || [];
-            this.triggersWithSynonyms.push(newTrigger);
-          }
-          this.newTriggerName = "";
-        } else {
-          console.error("Failed to create trigger", res);
-        }
-      });
-      this.serviceHelper?.callService(config);
+    if (this.serviceHelper) {
+      this.serviceHelper.callService(config);
+    } else {
+      console.warn("ServiceHelper not available, using static data");
     }
   }
 
   /**
-   * Removes a trigger by its ID.
+   * Loads queues from API
    */
-  removeTrigger(triggerId: string): void {
-    const config = this.createServiceConfig("DeleteTrigger", { cueCardId: this.cueCardId, triggerId }, (res: any) => {
-      if (res?.DeleteTriggerResult?.success) {
-        this.triggersWithSynonyms = this.triggersWithSynonyms.filter(trigger => trigger.id !== triggerId);
+  loadQueues(): void {
+    this.isLoadingQueues = true;
+    this.errorMessage = "";
+
+    const config = this.createServiceConfig("GetQueues", {}, (res: any) => {
+      this.isLoadingQueues = false;
+      
+      if (res?.GetQueuesResult?.success && res.GetQueuesResult.queues) {
+        this.availableQueues = res.GetQueuesResult.queues.map((queue: any) => ({
+          id: queue.queue_id,
+          name: queue.name
+        }));
+        console.log("Queues loaded successfully:", this.availableQueues.length);
       } else {
-        console.error("Failed to delete trigger", res);
+        this.errorMessage = res?.GetQueuesResult?.error_message || "Failed to load queues";
+        console.error("Failed to load queues:", this.errorMessage);
       }
     });
-    this.serviceHelper?.callService(config);
+
+    if (this.serviceHelper) {
+      this.serviceHelper.callService(config);
+    } else {
+      console.warn("ServiceHelper not available, using static data");
+    }
   }
 
   /**
-   * Adds a synonym to a specific trigger.
+   * Loads existing visibility rules from API
    */
-  addSynonym(triggerId: string, synonymName: string): void {
-    const trigger = this.findTriggerById(triggerId);
-    if (!trigger) {
-        console.error(`Trigger with ID ${triggerId} not found.`);
-        return;
+  loadVisibilityRules(): void {
+    if (!this.cueCardId) {
+      console.warn("cueCardId is not provided, cannot load visibility rules");
+      return;
     }
 
-    if (!synonymName.trim()) {
-        console.error("Synonym name is empty.");
-        return;
-    }
+    this.errorMessage = "";
 
-    const config = this.createServiceConfig("AddSynonym", { triggerId, synonymText: synonymName.trim() }, (res: any) => {
-        if (res?.AddSynonymResult?.Id) {
-            const newSynonym = { id: res.AddSynonymResult.Id, name: synonymName.trim() };
-
-            // Check if the synonym already exists
-            if (!trigger.synonyms.some(s => s.id === newSynonym.id)) {
-                trigger.synonyms = [...trigger.synonyms, newSynonym]; // Ensure Angular detects the change
-                console.log(`Synonym added:`, newSynonym);
-            } else {
-                console.warn(`Synonym with ID ${newSynonym.id} already exists.`);
-            }
-
-            trigger.newSynonym = "";
-        } else {
-            console.error("Failed to add synonym", res);
-        }
+    const config = this.createServiceConfig("GetVisibilityRules", {
+      cueCardId: this.cueCardId
+    }, (res: any) => {
+      if (res?.GetVisibilityRulesResult && Array.isArray(res.GetVisibilityRulesResult)) {
+        this.selectedFilters = res.GetVisibilityRulesResult.map((rule: any) => ({
+          type: rule.type,
+          value: rule.value,
+          displayName: rule.name
+        }));
+        
+        console.log("Visibility rules loaded successfully:", this.selectedFilters);
+      } else {
+        console.error("Failed to load visibility rules:", res);
+      }
     });
 
-    this.serviceHelper?.callService(config);
-  }
-
-  /**
-   * Removes a synonym from a specific trigger.
-   */
-  removeSynonym(triggerId: string, synonymId: string): void {
-    const trigger = this.findTriggerById(triggerId);
-    if (trigger) {
-      const config = this.createServiceConfig("RemoveSynonym", { synonymId }, (res: any) => {
-        if (res?.RemoveSynonymResult?.success) {
-          trigger.synonyms = trigger.synonyms.filter(synonym => synonym.id !== synonymId);
-        } else {
-          console.error("Failed to remove synonym", res);
-        }
-      });
-      this.serviceHelper?.callService(config);
+    if (this.serviceHelper) {
+      this.serviceHelper.callService(config);
+    } else {
+      console.warn("ServiceHelper not available, cannot load visibility rules");
     }
   }
 
   /**
-   * Handles the Enter key press for adding a trigger.
+   * Handles agent selection
    */
-  onTriggerInputEnter(event: KeyboardEvent): void {
-    if (event.key === "Enter") this.addTrigger();
+  onAgentSelect(): void {
+    if (this.selectedAgentId) {
+      const agent = this.availableAgents.find(a => a.id === this.selectedAgentId);
+      if (agent && !this.selectedFilters.some(f => f.type === "agent" && f.value === agent.id)) {
+        this.selectedFilters.push({
+          type: "agent",
+          value: agent.id,
+          displayName: agent.name
+        });
+        
+        console.log("Agent selected:", agent.name);
+        console.log("Current filters array:", this.selectedFilters);
+        
+        // Send updated rules to API
+        this.updateVisibilityRules();
+        
+        // Small delay for correct select reset
+        setTimeout(() => {
+          this.selectedAgentId = ""; // Reset select to placeholder
+        }, 10);
+      }
+    }
   }
 
   /**
-   * Handles the Enter key press for adding a synonym.
+   * Handles queue selection
    */
-  onSynonymInputEnter(event: KeyboardEvent, triggerId: string, synonymName: string): void {
-    if (event.key === "Enter") this.addSynonym(triggerId, synonymName);
+  onQueueSelect(): void {
+    if (this.selectedQueueId) {
+      const queue = this.availableQueues.find(q => q.id === this.selectedQueueId);
+      if (queue && !this.selectedFilters.some(f => f.type === "queue" && f.value === queue.id)) {
+        this.selectedFilters.push({
+          type: "queue",
+          value: queue.name,
+          displayName: queue.name
+        });
+        
+        console.log("Queue selected:", queue.name);
+        console.log("Current filters array:", this.selectedFilters);
+        
+        // Send updated rules to API
+        this.updateVisibilityRules();
+        
+        // Small delay for correct select reset
+        setTimeout(() => {
+          this.selectedQueueId = ""; // Reset select to placeholder
+        }, 10);
+      }
+    }
   }
 
   /**
-   * Focuses the input for adding a new synonym.
+   * Removes a filter
    */
-  focusNewSynonymInput(): void {
-    this.newSynonymInput?.nativeElement.focus();
+  removeFilter(index: number): void {
+    const removedFilter = this.selectedFilters[index];
+    this.selectedFilters.splice(index, 1);
+    
+    console.log("Filter removed:", removedFilter);
+    console.log("Current filters array:", this.selectedFilters);
+    
+    // Send updated rules to API
+    this.updateVisibilityRules();
   }
 
   /**
-   * Focuses a specific input element.
+   * Gets filter data in API format
    */
-  focusInput(inputElement: HTMLInputElement): void {
-    setTimeout(() => inputElement.focus(), 0);
+  getSelectedFiltersForApi(): {type: string, value: string}[] {
+    return this.selectedFilters.map(filter => ({
+      type: filter.type,
+      value: filter.value
+    }));
   }
 
   /**
-   * Creates a configuration object for service calls.
+   * Gets selected agents for display
+   */
+  get selectedAgents(): FilterItem[] {
+    return this.selectedFilters.filter(f => f.type === "agent");
+  }
+
+  /**
+   * Gets selected queues for display
+   */
+  get selectedQueues(): FilterItem[] {
+    return this.selectedFilters.filter(f => f.type === "queue");
+  }
+
+  /**
+   * Sets default filters (for loading from API)
+   */
+  setDefaultFilters(filters: FilterItem[]): void {
+    this.selectedFilters = [];
+    
+    filters.forEach(filter => {
+      let displayName = "";
+      
+      if (filter.type === "agent") {
+        const agent = this.availableAgents.find(a => a.id === filter.value);
+        displayName = agent ? agent.name : filter.value;
+      } else if (filter.type === "queue") {
+        const queue = this.availableQueues.find(q => q.id === filter.value);
+        displayName = queue ? queue.name : filter.value;
+      }
+      
+      this.selectedFilters.push({
+        type: filter.type,
+        value: filter.value,
+        displayName: displayName
+      });
+    });
+  }
+
+  /**
+   * Clears all filters
+   */
+  clearAllFilters(): void {
+    this.selectedFilters = [];
+    
+    console.log("All filters cleared");
+    console.log("Current filters array:", this.selectedFilters);
+    
+    // Send updated rules to API
+    this.updateVisibilityRules();
+  }
+
+  /**
+   * Clears only agent filters
+   */
+  clearAgentFilters(): void {
+    const agentsRemoved = this.selectedFilters.filter(f => f.type === "agent");
+    this.selectedFilters = this.selectedFilters.filter(f => f.type !== "agent");
+    
+    console.log("Agent filters cleared:", agentsRemoved);
+    console.log("Current filters array:", this.selectedFilters);
+    
+    // Send updated rules to API
+    this.updateVisibilityRules();
+  }
+
+  /**
+   * Clears only queue filters
+   */
+  clearQueueFilters(): void {
+    const queuesRemoved = this.selectedFilters.filter(f => f.type === "queue");
+    this.selectedFilters = this.selectedFilters.filter(f => f.type !== "queue");
+    
+    console.log("Queue filters cleared:", queuesRemoved);
+    console.log("Current filters array:", this.selectedFilters);
+    
+    // Send updated rules to API
+    this.updateVisibilityRules();
+  }
+
+  /**
+   * Sends updated visibility rules to API
+   */
+  private updateVisibilityRules(): void {
+    if (!this.cueCardId) {
+      console.warn("cueCardId is not provided, cannot update visibility rules");
+      return;
+    }
+
+    const visibilityRules = this.selectedFilters.map(filter => ({
+      type: filter.type,
+      value: filter.value
+    }));
+
+    console.log("Updating visibility rules with array:", visibilityRules);
+
+    const config = this.createServiceConfig("UpdateCueCardVisibilityRules", {
+      cueCardId: this.cueCardId,
+      visibilityRules: visibilityRules
+    }, (res: any) => {
+      if (res?.UpdateCueCardVisibilityRulesResult?.success) {
+        console.log("Visibility rules updated successfully");
+      } else {
+        console.error("Failed to update visibility rules:", res?.UpdateCueCardVisibilityRulesResult?.error_message);
+      }
+    });
+
+    if (this.serviceHelper) {
+      this.serviceHelper.callService(config);
+    } else {
+      console.warn("ServiceHelper not available, cannot update visibility rules");
+    }
+  }
+
+  /**
+   * Creates service configuration for API calls
    */
   private createServiceConfig(methodName: string, data: any, callback: (res: any) => void): any {
     return {
@@ -174,53 +327,30 @@ export class CuecardTriggerComponent implements OnInit {
       data,
     };
   }
-
-  /**
-   * Maps a raw trigger object to a Trigger interface.
-   */
-  private mapTrigger(item: any): Trigger {
-    return {
-      id: item.Id,
-      title: item.Text,
-      synonyms: Array.isArray(item.Synonyms) ? item.Synonyms.map((synonym: any) => ({ id: synonym.Id, name: synonym.Text })) : [],
-      note: "",
-      newSynonym: "",
-      newSynonymConfirmed: false,
-    };
-  }
-
-  /**
-   * Creates a new Trigger object.
-   */
-  private createTrigger(title: string, id: string): Trigger {
-    return { id, title, synonyms: [], note: "", newSynonym: "", newSynonymConfirmed: false };
-  }
-
-  /**
-   * Finds a trigger by its ID.
-   */
-  private findTriggerById(triggerId: string): Trigger | undefined {
-    return this.triggersWithSynonyms.find(trigger => trigger.id === triggerId);
-  }
-
-  /**
-   * Checks if a trigger with the given title already exists.
-   */
-  private isDuplicateTrigger(title: string): boolean {
-    return this.triggersWithSynonyms.some(trigger => trigger.title === title);
-  }
 }
 
-interface Trigger {
+interface Agent {
   id: string;
-  title: string;
-  synonyms: Synonym[];
-  note: string;
-  newSynonym: string;
-  newSynonymConfirmed: boolean;
+  name: string;
 }
 
-interface Synonym {
+interface Queue {
   id: string;
+  name: string;
+}
+
+interface FilterItem {
+  type: "agent" | "queue";
+  value: string;
+  displayName: string;
+}
+
+interface UserApiData {
+  ContactId: string;
+  Name: string;
+}
+
+interface QueueApiData {
+  queue_id: string;
   name: string;
 }

@@ -1,363 +1,188 @@
-# Angular Trigger List Component
+# Cue Card Visibility Settings Component
 
-A sophisticated Angular component for managing triggers and their synonyms in cue card applications. This component provides a complete solution for creating, editing, and managing triggers with associated synonyms through an intuitive user interface.
+Angular component for managing cue card visibility rules through agent and queue filtering system.
 
-## 🚀 Features
+## Features
 
-- **Trigger Management**: Create, view, and delete triggers
-- **Synonym Management**: Add and remove synonyms for each trigger
-- **Real-time Updates**: Dynamic UI updates with immediate feedback
-- **Keyboard Navigation**: Full keyboard support with Enter key functionality
-- **Error Handling**: Comprehensive error handling and validation
-- **Responsive Design**: Mobile-friendly interface
-- **Service Integration**: Seamless backend integration with configurable service calls
+- **Dynamic Data Loading**: Loads agents and queues from API endpoints
+- **Real-time Synchronization**: Automatically syncs filter changes with backend
+- **Intuitive UI**: Simple dropdown-based interface with visual filter tags
+- **Selective Clearing**: Remove individual filters or clear by type (agents/queues)
+- **Error Handling**: Displays loading states and error messages
 
-## 📦 Installation
+## Component Overview
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.4.
+The `CuecardTriggerComponent` provides a user interface for managing visibility rules for cue cards. Users can select agents and queues from dropdown lists, and the component automatically synchronizes these selections with the backend API.
 
-```bash
-git clone https://github.com/sherled99/angular-trigger-list.git
-cd angular-trigger-list
-npm install
-```
+## API Integration
 
-## 🛠️ Development
+The component integrates with the following API methods:
 
-### Development Server
+### Data Loading
+- **GetUsers**: Retrieves available agents
+- **GetQueues**: Retrieves available queues  
+- **GetVisibilityRules**: Loads existing visibility rules on component initialization
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Data Updates
+- **UpdateCueCardVisibilityRules**: Syncs filter changes to backend in real-time
 
-### Build
+## Usage
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Basic Implementation
 
-### Running Tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## 🎯 Usage
-
-### Basic Component Usage
-
-```typescript
+```html
 <cuecard-trigger 
-  [baseUrl]="'your-api-base-url'"
-  [cueCardId]="currentCueCardId"
-  [serviceHelper]="yourServiceHelper">
+  [serviceHelper]="serviceHelper" 
+  [cueCardId]="currentCueCardId">
 </cuecard-trigger>
 ```
 
-### Component Inputs
+### Required Inputs
 
-| Input | Type | Description |
-|-------|------|-------------|
-| `baseUrl` | string | Base URL for API calls |
-| `cueCardId` | any | ID of the current cue card |
-| `serviceHelper` | any | Service helper for making API calls |
+- `serviceHelper`: Service helper instance for API communication
+- `cueCardId`: Unique identifier for the cue card
 
-## 🏗️ Component Structure
+### Service Helper Interface
 
-### Main Component
-- **File**: `src/app/angular-trigger-list/angular-trigger-list.component.ts`
-- **Selector**: `cuecard-trigger`
-- **Responsibilities**: 
-  - Trigger and synonym lifecycle management
-  - API communication
-  - User input handling
-  - State management
-
-### Data Models
+The component expects a service helper with the following structure:
 
 ```typescript
-interface Trigger {
-  id: string;
-  title: string;
-  synonyms: Synonym[];
-  note: string;
-  newSynonym: string;
-  newSynonymConfirmed: boolean;
-}
-
-interface Synonym {
-  id: string;
-  name: string;
+interface ServiceHelper {
+  callService(config: {
+    serviceName: string;
+    methodName: string;
+    data: any;
+    callback: (response: any) => void;
+    scope: any;
+  }): void;
 }
 ```
 
-## 🔧 API Integration
+## Data Structures
 
-The component expects the following API endpoints:
+### Filter Item
+```typescript
+interface FilterItem {
+  type: "agent" | "queue";
+  value: string;        // Agent ID or Queue name
+  displayName: string;  // Human-readable name
+}
+```
 
-### GetTriggersTable
-- **Purpose**: Fetch all triggers with their synonyms
-- **Parameters**: `{ cueCardId: string }`
-- **Response**: Array of trigger objects
+### API Response Formats
 
-### CreateTrigger
-- **Purpose**: Create a new trigger
-- **Parameters**: `{ cueCardId: string, triggerName: string }`
-- **Response**: `{ CreateTriggerResult: { Id: string, Text: string, Synonyms: Array } }`
+#### GetUsers Response
+```json
+{
+  "GetUsersResult": {
+    "success": true,
+    "users": [
+      {
+        "ContactId": "410006e1-ca4e-4502-a9ec-e54d922d2c00",
+        "Name": "Supervisor"
+      }
+    ]
+  }
+}
+```
 
-### DeleteTrigger
-- **Purpose**: Delete an existing trigger
-- **Parameters**: `{ cueCardId: string, triggerId: string }`
-- **Response**: `{ DeleteTriggerResult: { success: boolean } }`
+#### GetQueues Response
+```json
+{
+  "GetQueuesResult": {
+    "success": true,
+    "queues": [
+      {
+        "queue_id": "QUEUE.AD test 3",
+        "name": "AD test 3"
+      }
+    ]
+  }
+}
+```
 
-### AddSynonym
-- **Purpose**: Add a synonym to a trigger
-- **Parameters**: `{ triggerId: string, synonymText: string }`
-- **Response**: `{ AddSynonymResult: { Id: string } }`
+#### GetVisibilityRules Response
+```json
+{
+  "GetVisibilityRulesResult": [
+    {
+      "name": "Supervisor",
+      "type": "agent", 
+      "value": "410006e1-ca4e-4502-a9ec-e54d922d2c00"
+    },
+    {
+      "name": "QUEUE.AD test 3",
+      "type": "queue",
+      "value": "QUEUE.AD test 3"
+    }
+  ]
+}
+```
 
-### RemoveSynonym
-- **Purpose**: Remove a synonym from a trigger
-- **Parameters**: `{ synonymId: string }`
-- **Response**: `{ RemoveSynonymResult: { success: boolean } }`
+## User Interface
 
-## 🎨 Styling
+### Layout
+- **Vertical Layout**: Agent and queue sections stacked vertically
+- **Dropdown Selects**: Simple select elements for choosing items
+- **Filter Tags**: Visual representation of selected filters
+- **Clear Buttons**: Individual and group clearing options
 
-The component includes comprehensive SCSS styling with:
-- Clean, modern design
-- Responsive layout
-- Interactive hover effects
-- Form validation styling
-- Accessibility considerations
+### Interactions
+1. **Select Agent/Queue**: Choose from dropdown → automatically adds to filters
+2. **Remove Individual Filter**: Click × on filter tag
+3. **Clear Agent Filters**: Click × button in Agent section  
+4. **Clear Queue Filters**: Click × button in Queue section
 
-## ⌨️ Keyboard Shortcuts
+### Auto-Reset Behavior
+After selecting an item from dropdown, the select automatically resets to placeholder state for additional selections.
 
-- **Enter**: Add new trigger or synonym (when focused on respective input)
-- **Tab**: Navigate between input fields
-- **Escape**: Clear input fields (can be extended)
+## Development
 
-## 🐛 Error Handling
-
-The component includes robust error handling for:
-- Invalid API responses
-- Network failures
-- Duplicate entries
-- Empty input validation
-- Missing trigger references
-
-## 🔄 State Management
-
-- Automatic UI updates when data changes
-- Optimistic updates for better UX
-- Rollback on API failures
-- Real-time synchronization with backend
-
-## 📁 Project Structure
-
+### Project Structure
 ```
 src/app/angular-trigger-list/
-├── angular-trigger-list.component.ts    # Main component logic
-├── angular-trigger-list.component.html  # Template
-└── angular-trigger-list.component.scss  # Styles
+├── angular-trigger-list.component.ts     # Main component logic
+├── angular-trigger-list.component.html   # Template
+└── angular-trigger-list.component.scss   # Styles
 ```
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🔗 Related Projects
-
-- [Angular CLI](https://github.com/angular/angular-cli)
-- [Angular Documentation](https://angular.io/docs)
-
-## 📞 Support
-
-For support, please open an issue in the GitHub repository or contact the development team.
-
----
-
-*Built with ❤️ using Angular*
-
----
-
-# Angular Trigger List Component (Русская версия)
-
-Продвинутый Angular компонент для управления триггерами и их синонимами в приложениях с карточками-подсказками. Этот компонент предоставляет полное решение для создания, редактирования и управления триггерами с соответствующими синонимами через интуитивный пользовательский интерфейс.
-
-## 🚀 Возможности
-
-- **Управление триггерами**: Создание, просмотр и удаление триггеров
-- **Управление синонимами**: Добавление и удаление синонимов для каждого триггера
-- **Обновления в реальном времени**: Динамические обновления UI с мгновенной обратной связью
-- **Навигация с клавиатуры**: Полная поддержка клавиатуры с функциональностью клавиши Enter
-- **Обработка ошибок**: Комплексная обработка ошибок и валидация
-- **Адаптивный дизайн**: Дружественный к мобильным устройствам интерфейс
-- **Интеграция с сервисами**: Бесшовная интеграция с бэкендом через настраиваемые вызовы сервисов
-
-## 📦 Установка
-
-Этот проект был создан с помощью [Angular CLI](https://github.com/angular/angular-cli) версии 16.1.4.
-
+### Building
 ```bash
-git clone https://github.com/sherled99/angular-trigger-list.git
-cd angular-trigger-list
-npm install
+npm run build
 ```
 
-## 🛠️ Разработка
+### Dependencies
+- Angular (latest)
+- FormsModule (for ngModel)
 
-### Сервер разработки
+## Technical Details
 
-Выполните `ng serve` для запуска сервера разработки. Перейдите на `http://localhost:4200/`. Приложение автоматически перезагрузится при изменении исходных файлов.
+### State Management
+- `selectedFilters`: Main array containing all selected items
+- `availableAgents`: Loaded agent list from API
+- `availableQueues`: Loaded queue list from API
+- Loading states and error handling
 
-### Сборка
+### API Communication
+- Uses callback-based service helper pattern
+- Automatic retry capability for failed requests
+- Comprehensive error logging
 
-Выполните `ng build` для сборки проекта. Артефакты сборки будут сохранены в директории `dist/`.
+### Performance
+- Prevents duplicate filter additions
+- Efficient filtering using Array methods
+- Minimal DOM updates with Angular change detection
 
-### Запуск тестов
+## Error Handling
 
-Выполните `ng test` для запуска модульных тестов через [Karma](https://karma-runner.github.io).
+The component handles various error scenarios:
+- API service unavailability
+- Network request failures  
+- Invalid response formats
+- Missing required inputs
 
-## 🎯 Использование
+Error messages are displayed in the UI and logged to console for debugging.
 
-### Базовое использование компонента
+## Browser Support
 
-```typescript
-<cuecard-trigger 
-  [baseUrl]="'your-api-base-url'"
-  [cueCardId]="currentCueCardId"
-  [serviceHelper]="yourServiceHelper">
-</cuecard-trigger>
-```
-
-### Входные параметры компонента
-
-| Параметр | Тип | Описание |
-|----------|-----|----------|
-| `baseUrl` | string | Базовый URL для API вызовов |
-| `cueCardId` | any | ID текущей карточки-подсказки |
-| `serviceHelper` | any | Помощник сервиса для выполнения API вызовов |
-
-## 🏗️ Структура компонента
-
-### Основной компонент
-- **Файл**: `src/app/angular-trigger-list/angular-trigger-list.component.ts`
-- **Селектор**: `cuecard-trigger`
-- **Обязанности**: 
-  - Управление жизненным циклом триггеров и синонимов
-  - Связь с API
-  - Обработка пользовательского ввода
-  - Управление состоянием
-
-### Модели данных
-
-```typescript
-interface Trigger {
-  id: string;
-  title: string;
-  synonyms: Synonym[];
-  note: string;
-  newSynonym: string;
-  newSynonymConfirmed: boolean;
-}
-
-interface Synonym {
-  id: string;
-  name: string;
-}
-```
-
-## 🔧 Интеграция с API
-
-Компонент ожидает следующие API эндпоинты:
-
-### GetTriggersTable
-- **Назначение**: Получение всех триггеров с их синонимами
-- **Параметры**: `{ cueCardId: string }`
-- **Ответ**: Массив объектов триггеров
-
-### CreateTrigger
-- **Назначение**: Создание нового триггера
-- **Параметры**: `{ cueCardId: string, triggerName: string }`
-- **Ответ**: `{ CreateTriggerResult: { Id: string, Text: string, Synonyms: Array } }`
-
-### DeleteTrigger
-- **Назначение**: Удаление существующего триггера
-- **Параметры**: `{ cueCardId: string, triggerId: string }`
-- **Ответ**: `{ DeleteTriggerResult: { success: boolean } }`
-
-### AddSynonym
-- **Назначение**: Добавление синонима к триггеру
-- **Параметры**: `{ triggerId: string, synonymText: string }`
-- **Ответ**: `{ AddSynonymResult: { Id: string } }`
-
-### RemoveSynonym
-- **Назначение**: Удаление синонима из триггера
-- **Параметры**: `{ synonymId: string }`
-- **Ответ**: `{ RemoveSynonymResult: { success: boolean } }`
-
-## 🎨 Стилизация
-
-Компонент включает комплексную SCSS стилизацию с:
-- Чистым, современным дизайном
-- Адаптивным макетом
-- Интерактивными эффектами при наведении
-- Стилизацией валидации форм
-- Соображениями доступности
-
-## ⌨️ Горячие клавиши
-
-- **Enter**: Добавить новый триггер или синоним (при фокусе на соответствующем поле ввода)
-- **Tab**: Навигация между полями ввода
-- **Escape**: Очистка полей ввода (может быть расширено)
-
-## 🐛 Обработка ошибок
-
-Компонент включает надежную обработку ошибок для:
-- Недействительных ответов API
-- Сбоев сети
-- Дублирующихся записей
-- Валидации пустого ввода
-- Отсутствующих ссылок на триггеры
-
-## 🔄 Управление состоянием
-
-- Автоматические обновления UI при изменении данных
-- Оптимистичные обновления для лучшего UX
-- Откат при сбоях API
-- Синхронизация с бэкендом в реальном времени
-
-## 📁 Структура проекта
-
-```
-src/app/angular-trigger-list/
-├── angular-trigger-list.component.ts    # Основная логика компонента
-├── angular-trigger-list.component.html  # Шаблон
-└── angular-trigger-list.component.scss  # Стили
-```
-
-## 🤝 Участие в разработке
-
-1. Форкните репозиторий
-2. Создайте вашу ветку функциональности (`git checkout -b feature/AmazingFeature`)
-3. Зафиксируйте ваши изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Отправьте в ветку (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-Этот проект лицензирован под лицензией MIT - см. файл LICENSE для деталей.
-
-## 🔗 Связанные проекты
-
-- [Angular CLI](https://github.com/angular/angular-cli)
-- [Документация Angular](https://angular.io/docs)
-
-## 📞 Поддержка
-
-Для поддержки, пожалуйста, откройте issue в GitHub репозитории или свяжитесь с командой разработки.
-
----
-
-*Создано с ❤️ используя Angular*
+Compatible with all modern browsers supporting Angular applications.
