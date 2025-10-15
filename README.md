@@ -12,7 +12,7 @@ Angular component for managing cue card visibility rules through agent and queue
 
 ## Component Overview
 
-The `CuecardTriggerComponent` provides a user interface for managing visibility rules for cue cards. Users can select agents and queues from dropdown lists, and the component automatically synchronizes these selections with the backend API.
+The `CueCardVisibilitySettingsComponent` provides a user interface for managing visibility rules for cue cards. Users can select agents and queues from dropdown lists, and the component automatically synchronizes these selections with the backend API.
 
 ## API Integration
 
@@ -31,10 +31,10 @@ The component integrates with the following API methods:
 ### Basic Implementation
 
 ```html
-<cuecard-trigger 
+<cue-card-visibility-settings 
   [serviceHelper]="serviceHelper" 
   [cueCardId]="currentCueCardId">
-</cuecard-trigger>
+</cue-card-visibility-settings>
 ```
 
 ### Required Inputs
@@ -140,10 +140,10 @@ After selecting an item from dropdown, the select automatically resets to placeh
 
 ### Project Structure
 ```
-src/app/angular-trigger-list/
-├── angular-trigger-list.component.ts     # Main component logic
-├── angular-trigger-list.component.html   # Template
-└── angular-trigger-list.component.scss   # Styles
+src/app/cue-card-visibility-settings/
+├── cue-card-visibility-settings.component.ts     # Main component logic
+├── cue-card-visibility-settings.component.html   # Template
+└── cue-card-visibility-settings.component.scss   # Styles
 ```
 
 ### Building

@@ -14,12 +14,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from "@angular/material/tooltip";
 
 import { AppComponent } from './app.component';
-import { CuecardTriggerComponent } from './angular-trigger-list/angular-trigger-list.component';
+import { CueCardVisibilitySettingsComponent } from './cue-card-visibility-settings/cue-card-visibility-settings.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CuecardTriggerComponent
+    CueCardVisibilitySettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +41,7 @@ export class AppModule implements DoBootstrap {
   constructor(private injector: Injector) {}
   
   ngDoBootstrap(appRef: ApplicationRef): void {
-      const el = createCustomElement(CuecardTriggerComponent, { injector: this.injector });
+      const el = createCustomElement(CueCardVisibilitySettingsComponent, { injector: this.injector });
       customElements.define('angular-visibility-settings-component', el);
   }
 }

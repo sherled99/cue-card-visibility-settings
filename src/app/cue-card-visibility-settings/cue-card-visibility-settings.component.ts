@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from "@angular/core";
 
 @Component({
-  selector: "cuecard-trigger",
-  templateUrl: "./angular-trigger-list.component.html",
-  styleUrls: ["./angular-trigger-list.component.scss"],
+  selector: "cue-card-visibility-settings",
+  templateUrl: "./cue-card-visibility-settings.component.html",
+  styleUrls: ["./cue-card-visibility-settings.component.scss"],
 })
-export class CuecardTriggerComponent implements OnInit {
+export class CueCardVisibilitySettingsComponent implements OnInit {
   @Input() serviceHelper: any;
   @Input() cueCardId: string = "";
 
