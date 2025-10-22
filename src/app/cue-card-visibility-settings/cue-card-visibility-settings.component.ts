@@ -156,7 +156,7 @@ export class CueCardVisibilitySettingsComponent implements OnInit {
   onQueueSelect(): void {
     if (this.selectedQueueId) {
       const queue = this.availableQueues.find(q => q.id === this.selectedQueueId);
-      if (queue && !this.selectedFilters.some(f => f.type === "queue" && f.value === queue.id)) {
+      if (queue && !this.selectedFilters.some(f => f.type === "queue" && f.value === queue.name)) {
         this.selectedFilters.push({
           type: "queue",
           value: queue.name,
